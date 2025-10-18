@@ -130,6 +130,15 @@ async function getDeviceFingerprint() {
   return deviceId;
 }
 
+
+
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  
+
+
+  
 // ✅ التحقق عند تحميل الصفحة
 (async () => {
   const deviceId = await getDeviceFingerprint();
@@ -239,6 +248,108 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   };
   img.src = URL.createObjectURL(file);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+// ✅ نافذة منبثقة جميلة
+const popup = document.createElement("div");
+popup.style.position = "fixed";
+popup.style.inset = "0";
+popup.style.background = "rgba(0,0,0,0.8)";
+popup.style.display = "none";
+popup.style.justifyContent = "center";
+popup.style.alignItems = "center";
+popup.style.zIndex = "2000";
+popup.innerHTML = `
+  <div style="
+    background:#1e1e1e;
+    padding:25px 35px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.6);
+    text-align:center;
+    color:#fff;
+    font-size:1.3em;
+    font-family:'IBM Plex Sans Arabic',sans-serif;
+    border:2px solid #e74c3c;
+  ">
+    🔒 انتهت الجلسة <br><br>
+    <button id="popupBtn" style="
+      background:#e74c3c;
+      color:white;
+      border:none;
+      padding:8px 20px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:1em;
+    ">حسنًا</button>
+  </div>
+`;
+document.body.appendChild(popup);
+document.getElementById("popupBtn").onclick = () => location.reload();
+
+// ✅ وظيفة المراقبة اللحظية
+async function startRealtimeSessionWatcher() {
+  const savedCode = localStorage.getItem("qr_code_value");
+  if (!savedCode) return;
+  const deviceId = await getDeviceFingerprint();
+  const codeRef = ref(db, "codes/" + savedCode);
+
+  onValue(codeRef, (snap) => {
+    if (!snap.exists() || snap.val().usedBy !== deviceId) {
+      // 🔹 إزالة بيانات الجلسة فورًا
+      localStorage.removeItem("qr_access_granted");
+      localStorage.removeItem("qr_code_value");
+      stopCamera();
+      content.style.display = "none";
+      overlay.style.display = "flex";
+      message.textContent = "";
+      popup.style.display = "flex"; // عرض النافذة المنبثقة فورًا
+    }
+  });
+}
+
+// ✅ تفعيل المراقبة بعد الدخول الناجح
+function grantAccess(scanned) {
+  message.textContent = "تم التحقق بنجاح ✅";
+  stopCamera();
+  localStorage.setItem("qr_access_granted", "true");
+  localStorage.setItem("qr_code_value", scanned);
+  setTimeout(() => {
+    overlay.style.display = "none";
+    content.style.display = "flex";
+    startRealtimeSessionWatcher(); // 🧩 تشغيل المراقبة اللحظية هنا
+  }, 800);
+}
+
+// ✅ كذلك إذا المستخدم دخل سابقًا بكود محفوظ
+(async () => {
+  const savedCode = localStorage.getItem("qr_code_value");
+  const deviceId = await getDeviceFingerprint();
+  if (savedCode) {
+    const snap = await get(ref(db, "codes/" + savedCode));
+    if (snap.exists() && snap.val().usedBy === deviceId) {
+      overlay.style.display = "none";
+      content.style.display = "flex";
+      startRealtimeSessionWatcher(); // 🧩 تشغيل المراقبة فور الدخول التلقائي
+      return;
+    }
+  }
+  startCamera();
+})();
+
+
+
+
+  
 </script>
 </body>
 </html>

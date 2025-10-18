@@ -6,8 +6,39 @@
 <title>M1 GC</title>
 <style>
 * {margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;font-family:"Dela Gothic One",sans-serif;}
-body{display:flex;justify-content:center;align-items:center;background-color:#121212;color:#f1f1f1;padding:10px;margin-top:10px;}
-#overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;}
+body{display:flex;justify-content:center;align-items:center;background-color:#121212;color:#f1f1f1;padding:10px;margin-top:10px;height:100vh;overflow:hidden;}
+/* 🔹 شاشة التحميل */
+#loader {
+  position:fixed;
+  inset:0;
+  background:#000d;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+.spinner {
+  border:6px solid #333;
+  border-top:6px solid #10b981;
+  border-radius:50%;
+  width:60px;
+  height:60px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
+#loader p {
+  margin-top:15px;
+  font-size:1.1em;
+  color:#10b981;
+}
+
+/* 🔹 واجهة الـ QR */
+#overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity 0.5s ease;}
+#overlay.show{opacity:1;}
 video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;background:#000;object-fit:cover;transform:scaleX(-1);}
 #message{margin-top:10px;font-size:1.1em;text-align:center;}
 .container{display:none;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:600px;margin:auto;}
@@ -22,12 +53,20 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
 </head>
 <body>
 
+<!-- 🔹 شاشة التحميل -->
+<div id="loader">
+  <div class="spinner"></div>
+  <p>جاري التحقق من الاتصال...</p>
+</div>
+
+<!-- 🔹 واجهة مسح QR -->
 <div id="overlay">
   <video id="video" autoplay></video>
   <div id="message">يرجى مسح رمز الـ QR للدخول...</div>
   <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
 </div>
 
+<!-- 🔹 المحتوى بعد الدخول -->
 <div class="container" id="content">
   <div class="selection-container" id="selectionContainer">
     <h2>🇵🇸</h2>
@@ -72,6 +111,7 @@ const db = getDatabase(app);
 
 const video = document.getElementById('video');
 const overlay = document.getElementById('overlay');
+const loader = document.getElementById('loader');
 const message = document.getElementById('message');
 const content = document.getElementById('content');
 const allowedCodes = ["123456", "654321", "112233", "445566", "4455667"];
@@ -80,7 +120,7 @@ let streamRef = null;
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 
-// 🔹 استخدام FingerprintJS لتوليد معرف ثابت للجهاز
+// 🔹 إنشاء معرف الجهاز
 async function getDeviceFingerprint() {
   if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
   const fp = await FingerprintJS.load();
@@ -90,19 +130,25 @@ async function getDeviceFingerprint() {
   return deviceId;
 }
 
-// ✅ التحقق من قاعدة البيانات عند تحميل الصفحة
+// ✅ التحقق عند تحميل الصفحة
 (async () => {
-  const savedCode = localStorage.getItem("qr_code_value");
   const deviceId = await getDeviceFingerprint();
-  if (savedCode) {
-    const snap = await get(ref(db, "codes/" + savedCode));
-    if (snap.exists() && snap.val().usedBy === deviceId) {
-      overlay.style.display = "none";
-      content.style.display = "flex";
-      return;
+  const savedCode = localStorage.getItem("qr_code_value");
+
+  setTimeout(async () => { // لإظهار التحميل الواقعي 1.5 ثانية
+    if (savedCode) {
+      const snap = await get(ref(db, "codes/" + savedCode));
+      if (snap.exists() && snap.val().usedBy === deviceId) {
+        loader.style.display = "none";
+        overlay.style.display = "none";
+        content.style.display = "flex";
+        return;
+      }
     }
-  }
-  startCamera();
+    loader.style.display = "none";
+    overlay.classList.add("show");
+    startCamera();
+  }, 1500);
 })();
 
 async function startCamera() {
@@ -177,7 +223,7 @@ window.returnToSelection = function() {
   document.getElementById('selectionContainer').style.display = 'block';
 }
 
-// مسح QR من صورة
+// 🔹 تحميل صورة QR
 document.getElementById('fileInput').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;

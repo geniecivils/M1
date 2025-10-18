@@ -1,48 +1,22 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>M1 GC</title>
 <style>
 * {margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;font-family:"Dela Gothic One",sans-serif;}
 body{display:flex;justify-content:center;align-items:center;background-color:#121212;color:#f1f1f1;padding:10px;margin-top:10px;height:100vh;overflow:hidden;}
-/* 🔹 شاشة التحميل */
-#loader {
-  position:fixed;
-  inset:0;
-  background:#000d;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:1000;
-}
-.spinner {
-  border:6px solid #333;
-  border-top:6px solid #10b981;
-  border-radius:50%;
-  width:60px;
-  height:60px;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  from {transform:rotate(0deg);}
-  to {transform:rotate(360deg);}
-}
-#loader p {
-  margin-top:15px;
-  font-size:1.1em;
-  color:#10b981;
-}
-
-/* 🔹 واجهة الـ QR */
-#overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity 0.5s ease;}
+#loader{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;}
+.spinner{border:6px solid #333;border-top:6px solid #10b981;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+#loader p{margin-top:15px;font-size:1.1em;color:#10b981;}
+#overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity .5s ease;}
 #overlay.show{opacity:1;}
 video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;background:#000;object-fit:cover}
 #message{margin-top:10px;font-size:1.1em;text-align:center;}
 .container{display:none;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:600px;margin:auto;}
-.selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.5);width:100%;}
+.selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.5);width:100%;}
 .selection-container h2,.content-container h2{text-align:center;padding-bottom:10px;}
 .contents{display:flex;justify-content:center;}
 .btn{display:inline-block;margin:10px;padding:10px 15px;background-color:#1e90ff;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:1em;}
@@ -53,20 +27,20 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
 </head>
 <body>
 
-<!-- 🔹 شاشة التحميل -->
+<!-- شاشة التحميل -->
 <div id="loader">
   <div class="spinner"></div>
   <p>جاري التحقق من الاتصال...</p>
 </div>
 
-<!-- 🔹 واجهة مسح QR -->
+<!-- واجهة QR -->
 <div id="overlay">
   <video id="video" autoplay></video>
   <div id="message">يرجى مسح رمز الـ QR للدخول...</div>
   <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
 </div>
 
-<!-- 🔹 المحتوى بعد الدخول -->
+<!-- المحتوى -->
 <div class="container" id="content">
   <div class="selection-container" id="selectionContainer">
     <h2>🇵🇸</h2>
@@ -91,16 +65,31 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
 
 <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+
 <script type="module">
+/*
+  النسخة المحسنة: تضيف تتبّع وقت الدخول، حالة أونلاين/أوفلاين، اسم الجهاز، موقع المستخدم (lat/lng/accuracy)، و heartbeat دوري.
+  • العقدة: sessions/{deviceId} ستحتوي على: online, enteredAt, lastSeen, lastHeartbeat, deviceName, location, code
+  • أيضاً نحدّث codes/{code} بإدخال آخر/من يستخدمه.
+*/
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  onValue,
+  onDisconnect,
+  update
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
   authDomain: "my-id-19724.firebaseapp.com",
   databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
   projectId: "my-id-19724",
-  storageBucket: "my-id-19724.firebasestorage.app",
+  storageBucket: "my-id-19724.appspot.com",
   messagingSenderId: "788057820357",
   appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
   measurementId: "G-5QX27XCFK6"
@@ -109,18 +98,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+/* عناصر الواجهة */
 const video = document.getElementById('video');
 const overlay = document.getElementById('overlay');
 const loader = document.getElementById('loader');
 const message = document.getElementById('message');
 const content = document.getElementById('content');
+
+/* إعدادات */
 const allowedCodes = ["123456", "654321", "112233", "445566", "4455667"];
 let scanning = false;
 let streamRef = null;
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 
-// 🔹 إنشاء معرف الجهاز
+/* حالة تتبع */
+let deviceIdGlobal = null;
+let heartbeatIntervalId = null;
+
+/* إنشاء معرف الجهاز (FingerprintJS) */
 async function getDeviceFingerprint() {
   if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
   const fp = await FingerprintJS.load();
@@ -130,35 +126,45 @@ async function getDeviceFingerprint() {
   return deviceId;
 }
 
+/* اسم الجهاز - نجمع info من اليوزر-أجنت وبلاتفورم */
+function getDeviceName() {
+  try {
+    const ua = navigator.userAgent || "unknown";
+    const platform = navigator.platform || "unknown";
+    return `${platform} — ${ua}`;
+  } catch (e) {
+    return "Unknown Device";
+  }
+}
 
-  
-// ✅ التحقق عند تحميل الصفحة
-(async () => {
-  const deviceId = await getDeviceFingerprint();
-  const savedCode = localStorage.getItem("qr_code_value");
+/* الحصول على الإحداثيات (lat/lng) إن سمح المستخدم */
+function getLocation() {
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy
+        });
+      },
+      (err) => {
+        // إن رفض المستخدم أو خطأ، نعيد null
+        console.warn("Geolocation error:", err);
+        resolve(null);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
+}
 
-  setTimeout(async () => { // لإظهار التحميل الواقعي 1.5 ثانية
-    if (savedCode) {
-      const snap = await get(ref(db, "codes/" + savedCode));
-      if (snap.exists() && snap.val().usedBy === deviceId) {
-        loader.style.display = "none";
-        overlay.style.display = "none";
-        content.style.display = "flex";
-        return;
-      }
-    }
-    loader.style.display = "none";
-    overlay.classList.add("show");
-    startCamera();
-  }, 1500);
-})();
-
+/* بدء الكاميرا */
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     video.srcObject = stream;
     streamRef = stream;
-    video.setAttribute("playsinline", true);
     scanning = true;
     scanLoop();
   } catch (err) {
@@ -166,7 +172,6 @@ async function startCamera() {
     console.error(err);
   }
 }
-
 function stopCamera() {
   scanning = false;
   if (streamRef) streamRef.getTracks().forEach(track => track.stop());
@@ -174,6 +179,7 @@ function stopCamera() {
   streamRef = null;
 }
 
+/* حلقة المسح */
 async function scanLoop() {
   if (!scanning) return;
   if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -187,45 +193,138 @@ async function scanLoop() {
   requestAnimationFrame(scanLoop);
 }
 
+/* معالجة الكود الممسوح -- مع تتبّع في Firebase */
 async function handleScannedCode(scanned) {
   if (!allowedCodes.includes(scanned)) { message.textContent = "كود غير صحيح ❌"; return; }
+
   const codeRef = ref(db, "codes/" + scanned);
   const snapshot = await get(codeRef);
   const deviceId = await getDeviceFingerprint();
+  deviceIdGlobal = deviceId;
 
   if (!snapshot.exists()) {
     await set(codeRef, { used: true, usedBy: deviceId, time: Date.now() });
-    grantAccess(scanned);
+    await grantAccess(scanned);
   } else if (snapshot.val().usedBy === deviceId) {
-    grantAccess(scanned);
+    await grantAccess(scanned);
   } else {
     message.textContent = "❌ هذا الكود مستعمل من جهاز آخر";
   }
 }
 
-function grantAccess(scanned) {
+/* بدء مراقبة الجلسة اللحظية: إذا تغيرت ملكية الكود نخرج المستخدم */
+async function startRealtimeSessionWatcher() {
+  const savedCode = localStorage.getItem("qr_code_value");
+  if (!savedCode) return;
+  const deviceId = await getDeviceFingerprint();
+  const codeRef = ref(db, "codes/" + savedCode);
+
+  onValue(codeRef, (snap) => {
+    if (!snap.exists() || snap.val().usedBy !== deviceId) {
+      // إيقاف الجلسة فورًا
+      localStorage.removeItem("qr_access_granted");
+      localStorage.removeItem("qr_code_value");
+      stopCamera();
+      content.style.display = "none";
+      overlay.style.display = "flex";
+      message.textContent = "";
+      popup.style.display = "flex";
+    }
+  });
+}
+
+/* نافذة منبثقة عند انتهاء الجلسة */
+const popup = document.createElement("div");
+popup.style.position = "fixed";
+popup.style.inset = "0";
+popup.style.background = "rgba(0,0,0,0.8)";
+popup.style.display = "none";
+popup.style.justifyContent = "center";
+popup.style.alignItems = "center";
+popup.style.zIndex = "2000";
+popup.innerHTML = `
+  <div style="background:#1e1e1e;padding:25px 35px;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,0.6);text-align:center;color:#fff;font-size:1.3em;font-family:'IBM Plex Sans Arabic',sans-serif;border:2px solid #e74c3c;">
+    🔒 انتهت الجلسة <br><br>
+    <button id="popupBtn" style="background:#e74c3c;color:white;border:none;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:1em;">حسنًا</button>
+  </div>`;
+document.body.appendChild(popup);
+popup.querySelector("#popupBtn").onclick = () => location.reload();
+
+/* تحديث heartbeat دوري في sessions/{deviceId}/lastHeartbeat */
+function startHeartbeat(deviceId) {
+  // حد أقصى: تحديث كل 20 ثانية
+  if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+  heartbeatIntervalId = setInterval(async () => {
+    try {
+      await update(ref(db, `sessions/${deviceId}`), { lastHeartbeat: Date.now() });
+    } catch (e) {
+      console.warn("Heartbeat failed:", e);
+    }
+  }, 20000);
+}
+function stopHeartbeat() {
+  if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+  heartbeatIntervalId = null;
+}
+
+/* منح الوصول: يكتب session في Firebase مع onDisconnect لإظهار أوفلاين */
+async function grantAccess(scanned) {
   message.textContent = "تم التحقق بنجاح ✅";
   stopCamera();
-  localStorage.setItem("qr_access_granted", "true");
-  localStorage.setItem("qr_code_value", scanned);
-  setTimeout(() => {
-    overlay.style.display = "none";
-    content.style.display = "flex";
-  }, 800);
+
+  const deviceId = await getDeviceFingerprint();
+  deviceIdGlobal = deviceId;
+  const deviceName = getDeviceName();
+  const location = await getLocation(); // قد يكون null
+  const enteredAt = Date.now();
+
+  // كتابة الجلسة الأولى
+  const sessionRef = ref(db, `sessions/${deviceId}`);
+  const sessionData = {
+    code: scanned,
+    deviceName,
+    location: location || null,
+    enteredAt,
+    online: true,
+    lastSeen: null,
+    lastHeartbeat: enteredAt
+  };
+
+  try {
+    await set(sessionRef, sessionData);
+
+    // على انقطاع الاتصال: ضع online=false و lastSeen
+    await onDisconnect(sessionRef).update({
+      online: false,
+      lastSeen: Date.now()
+    });
+
+    // حدّث أيضاً كائن الكود (معلومة إضافية)
+    await update(ref(db, `codes/${scanned}`), {
+      used: true,
+      usedBy: deviceId,
+      lastUsedAt: Date.now()
+    });
+
+    // خزّن في localStorage للولوج التلقائي
+    localStorage.setItem("qr_access_granted", "true");
+    localStorage.setItem("qr_code_value", scanned);
+
+    // إظهار المحتوى وتشغيل مراقبة الجلسة و heartbeat
+    setTimeout(() => {
+      overlay.style.display = "none";
+      content.style.display = "flex";
+      startRealtimeSessionWatcher();
+      startHeartbeat(deviceId);
+    }, 800);
+
+  } catch (err) {
+    console.error("grantAccess error:", err);
+    message.textContent = "خطأ في تخزين الجلسة. حاول مرة أخرى.";
+  }
 }
 
-window.goToPage = function(pageId) {
-  document.querySelectorAll('.content-container').forEach(c => c.style.display = 'none');
-  document.getElementById('selectionContainer').style.display = 'none';
-  document.getElementById(pageId).style.display = 'block';
-}
-
-window.returnToSelection = function() {
-  document.querySelectorAll('.content-container').forEach(c => c.style.display = 'none');
-  document.getElementById('selectionContainer').style.display = 'block';
-}
-
-// 🔹 تحميل صورة QR
+/* تحميل صورة QR (ملف) */
 document.getElementById('fileInput').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -242,107 +341,77 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   img.src = URL.createObjectURL(file);
 });
 
-
-
-
-
-
-
-
-
-
-
-
-// ✅ نافذة منبثقة جميلة
-const popup = document.createElement("div");
-popup.style.position = "fixed";
-popup.style.inset = "0";
-popup.style.background = "rgba(0,0,0,0.8)";
-popup.style.display = "none";
-popup.style.justifyContent = "center";
-popup.style.alignItems = "center";
-popup.style.zIndex = "2000";
-popup.innerHTML = `
-  <div style="
-    background:#1e1e1e;
-    padding:25px 35px;
-    border-radius:15px;
-    box-shadow:0 0 20px rgba(0,0,0,0.6);
-    text-align:center;
-    color:#fff;
-    font-size:1.3em;
-    font-family:'IBM Plex Sans Arabic',sans-serif;
-    border:2px solid #e74c3c;
-  ">
-    🔒 انتهت الجلسة <br><br>
-    <button id="popupBtn" style="
-      background:#e74c3c;
-      color:white;
-      border:none;
-      padding:8px 20px;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:1em;
-    ">حسنًا</button>
-  </div>
-`;
-document.body.appendChild(popup);
-document.getElementById("popupBtn").onclick = () => location.reload();
-
-// ✅ وظيفة المراقبة اللحظية
-async function startRealtimeSessionWatcher() {
-  const savedCode = localStorage.getItem("qr_code_value");
-  if (!savedCode) return;
-  const deviceId = await getDeviceFingerprint();
-  const codeRef = ref(db, "codes/" + savedCode);
-
-  onValue(codeRef, (snap) => {
-    if (!snap.exists() || snap.val().usedBy !== deviceId) {
-      // 🔹 إزالة بيانات الجلسة فورًا
-      localStorage.removeItem("qr_access_granted");
-      localStorage.removeItem("qr_code_value");
-      stopCamera();
-      content.style.display = "none";
-      overlay.style.display = "flex";
-      message.textContent = "";
-      popup.style.display = "flex"; // عرض النافذة المنبثقة فورًا
-    }
-  });
-}
-
-// ✅ تفعيل المراقبة بعد الدخول الناجح
-function grantAccess(scanned) {
-  message.textContent = "تم التحقق بنجاح ✅";
-  stopCamera();
-  localStorage.setItem("qr_access_granted", "true");
-  localStorage.setItem("qr_code_value", scanned);
-  setTimeout(() => {
-    overlay.style.display = "none";
-    content.style.display = "flex";
-    startRealtimeSessionWatcher(); // 🧩 تشغيل المراقبة اللحظية هنا
-  }, 800);
-}
-
-// ✅ كذلك إذا المستخدم دخل سابقًا بكود محفوظ
+/* بدء التحقق عند تحميل الصفحة - يتحقق إذا الجهاز مسجّل مسبقًا */
 (async () => {
-  const savedCode = localStorage.getItem("qr_code_value");
   const deviceId = await getDeviceFingerprint();
-  if (savedCode) {
-    const snap = await get(ref(db, "codes/" + savedCode));
-    if (snap.exists() && snap.val().usedBy === deviceId) {
-      overlay.style.display = "none";
-      content.style.display = "flex";
-      startRealtimeSessionWatcher(); // 🧩 تشغيل المراقبة فور الدخول التلقائي
-      return;
+  deviceIdGlobal = deviceId;
+  const savedCode = localStorage.getItem("qr_code_value");
+
+  setTimeout(async () => {
+    if (savedCode) {
+      const snap = await get(ref(db, "codes/" + savedCode));
+      if (snap.exists() && snap.val().usedBy === deviceId) {
+        // تحقق إضافي: تأكّد أن الجلسة مسجّلة كـ online — إن لم يكن، نعيد تهيئة الجلسة
+        const sessionSnap = await get(ref(db, `sessions/${deviceId}`));
+        if (sessionSnap.exists()) {
+          const s = sessionSnap.val();
+          // إذا كانت offline أو غير موجودة، نعيد تسجيل القيم الأساسية
+          if (!s.online) {
+            // أعد تعيين online
+            await update(ref(db, `sessions/${deviceId}`), { online: true, lastHeartbeat: Date.now() });
+          }
+        } else {
+          // إنشاء جلسة جديدة قصيرة إذا لم توجد
+          await set(ref(db, `sessions/${deviceId}`), {
+            code: savedCode,
+            deviceName: getDeviceName(),
+            location: null,
+            enteredAt: Date.now(),
+            online: true,
+            lastSeen: null,
+            lastHeartbeat: Date.now()
+          });
+          await onDisconnect(ref(db, `sessions/${deviceId}`)).update({ online: false, lastSeen: Date.now() });
+        }
+
+        loader.style.display = "none";
+        overlay.style.display = "none";
+        content.style.display = "flex";
+        startRealtimeSessionWatcher();
+        startHeartbeat(deviceId);
+        return;
+      }
     }
-  }
-  startCamera();
+    loader.style.display = "none";
+    overlay.classList.add("show");
+    startCamera();
+  }, 1500);
 })();
 
+/* التنقل بين الصفحات */
+window.goToPage = function(pageId) {
+  document.querySelectorAll('.content-container').forEach(c => c.style.display = 'none');
+  document.getElementById('selectionContainer').style.display = 'none';
+  document.getElementById(pageId).style.display = 'block';
+};
+window.returnToSelection = function() {
+  document.querySelectorAll('.content-container').forEach(c => c.style.display = 'none');
+  document.getElementById('selectionContainer').style.display = 'block';
+};
 
-
-
-  
+/* تأكد من تنظيف الـ session لو أغلق المستخدم الصفحة يدوياً (محاولة مضاعفة لإغلاق الجلسة) */
+window.addEventListener("beforeunload", async (e) => {
+  try {
+    const deviceId = deviceIdGlobal || localStorage.getItem("deviceId");
+    if (deviceId) {
+      // نحدث آخر مشاهدة و online=false
+      await update(ref(db, `sessions/${deviceId}`), { online: false, lastSeen: Date.now() });
+    }
+  } catch (err) {
+    // لا نفعل الكثير لأن beforeunload يجب أن يكون سريعاً
+    console.warn("beforeunload update failed:", err);
+  }
+});
 </script>
 </body>
 </html>

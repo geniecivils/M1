@@ -28,8 +28,6 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
 #manualCodeInput{padding:8px 10px;border-radius:8px;border:none;font-size:1em;}
 #manualCodeBtn{padding:8px 15px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;}
 #manualCodeBtn:hover{background:#0f9c6e;}
-
-/* popup session ended */
 #sessionPopup{
   position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:2000;
 }
@@ -45,13 +43,11 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
 </head>
 <body>
 
-<!-- شاشة التحميل -->
 <div id="loader">
   <div class="spinner"></div>
   <p>جاري التحقق من الاتصال...</p>
 </div>
 
-<!-- واجهة QR + إدخال الكود -->
 <div id="overlay">
   <video id="video" autoplay></video>
   <div id="message">يرجى مسح رمز الـ QR أو إدخال الكود للدخول...</div>
@@ -62,7 +58,6 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
   </div>
 </div>
 
-<!-- popup session ended -->
 <div id="sessionPopup">
   <div id="sessionPopupContent">
     🔒 انتهت الجلسة
@@ -71,7 +66,6 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;backg
   </div>
 </div>
 
-<!-- المحتوى -->
 <div class="container" id="content">
   <div class="selection-container" id="selectionContainer">
     <h2>🇵🇸</h2>
@@ -150,10 +144,12 @@ async function getDeviceFingerprint() {
   localStorage.setItem("deviceId", deviceId);
   return deviceId;
 }
+
 function getDeviceName() {
   try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; } 
   catch { return "Unknown Device"; }
 }
+
 function getLocation() {
   return new Promise((resolve) => {
     if (!("geolocation" in navigator)) return resolve(null);
@@ -242,9 +238,9 @@ async function grantAccess(scanned) {
   deviceIdGlobal=deviceId;
   const deviceName=getDeviceName();
   const location=await getLocation();
-  const enteredAt=Date.now();
+  const now=Date.now();
   const sessionRef=ref(db,`sessions/${deviceId}`);
-  const sessionData={code:scanned,deviceName,location:location||null,enteredAt,online:true,lastSeen:null,lastHeartbeat:enteredAt,exitAt:null};
+  const sessionData={code:scanned,deviceName,location:location||null,enteredAt:now,online:true,lastSeen:null,lastHeartbeat:now,exitAt:null};
 
   try {
     const visitorRef=ref(db,`visitors/${deviceId}`);
@@ -257,9 +253,13 @@ async function grantAccess(scanned) {
       const totalRef=ref(db,`counters/totalVisitors`);
       await runTransaction(totalRef,current=>(current||0)+1);
     } else { await update(visitorRef,{lastSeen:Date.now(),deviceName}); }
+
     localStorage.setItem("qr_access_granted","true");
     localStorage.setItem("qr_code_value",scanned);
-    setTimeout(()=>{ overlay.style.display="none"; content.style.display="flex"; startRealtimeSessionWatcher(); startHeartbeat(deviceId); },800);
+    setTimeout(()=>{
+      overlay.style.display="none"; content.style.display="flex";
+      startRealtimeSessionWatcher(); startHeartbeat(deviceId);
+    },800);
   } catch(err){ console.error("grantAccess error:",err); message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى.";}
 }
 
@@ -299,6 +299,7 @@ async function startRealtimeSessionWatcher(){
       localStorage.removeItem("qr_access_granted");
       localStorage.removeItem("qr_code_value");
       stopHeartbeat();
+      updateSessionOffline(); // تحديث exitAt عند انتهاء الكود
     }
   });
 }
@@ -340,10 +341,7 @@ window.addEventListener("beforeunload", updateSessionOffline);
 window.addEventListener("unload", updateSessionOffline);
 
 /* تحقق من كلمة المرور اليدوية */
-manualCodeBtn.onclick = async ()=>{
-  const code = manualCodeInput.value.trim();
-  if(code) await handleScannedCode(code);
-};
+manualCodeBtn.onclick = async ()=>{ const code = manualCodeInput.value.trim(); if(code) await handleScannedCode(code); };
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="fr" >
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,21 +25,54 @@ background-color: #333;
 cursor: pointer;
 }
 
-body{justify-content:center;align-items:center;background-color:#121212;color:#f1f1f1;padding:10px;margin-top:10px;height:100vh;overflow:hidden;}
+#fileInput{display: flex; width: 20%;}
+h4{color: #333; font-size: 1.5em; text-align: center;}
+h3{text-align: center;}
+
+body{      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #121212;
+      color: #f1f1f1;
+      height: 100%;
+      padding: 10px;
+      margin-top: 10px;}
 #loader{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;}
-.spinner{border:6px solid #333;border-top:6px solid #10b981;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;}
+.spinner{border:6px solid #333;border-top:6px solid #007acc;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
-#loader p{margin-top:15px;font-size:1.1em;color:#10b981;}
+#loader p{margin-top:15px;font-size:1.1em;color:#007acc;}
 #overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity .5s ease;}
 #overlay.show{opacity:1;}
-video{width:300px;height:220px;border-radius:10px;border:2px solid #10b981;background:#000;object-fit:cover}
+video{width:300px;height:220px;border-radius:10px;border:2px solid #007acc;background:#000;object-fit:cover}
 #message{margin-top:10px;font-size:1.1em;text-align:center;}
-.container{display:none;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:600px;margin:auto; /* Scollbar if needed */ overflow-y: auto; max-height: 95vh;}
+.container{      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      max-width: 600px;
+      margin: auto;}
 .selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.5);width:100%;}
 .selection-container h2,.content-container h2{text-align:center;padding-bottom:10px;}
-.contents{display:flex;justify-content:center;flex-wrap:wrap;}
-.btn{display:inline-block;margin:10px;padding:10px 15px;background-color:#1e90ff;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:1em;cursor:pointer;}
+.contents{display:flex;justify-content:center;flex-wrap:wrap;flex-direction: row-reverse;}
+.btn{text-decoration:none;display:inline-block;margin:10px;padding:10px 15px;background-color:#1e90ff;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:1em;cursor:pointer; border: none;} /* تمت إضافة border:none */
 .btn:hover{background-color:#007acc;}
+
+/* === ستايل زر التحديث المضاف === */
+.button-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* سيبدأ من اليمين بسبب dir="rtl" */
+    width: 100%;
+    /* margin-bottom: 10px;  لإضافة مسافة تحت الأزرار */
+    /* flex-direction: row-reverse; */
+}
+.btn-refresh {
+    background-color: #28a745; /* لون أخضر */
+}
+.btn-refresh:hover {
+    background-color: #218838; /* أخضر أغمق عند المرور */
+}
 
 /* === نمط البانر من الديزاين المستهدف === */
 .myword1{
@@ -57,10 +90,10 @@ border-bottom: 1px solid #333;
 .myword1:hover{background:#86fd6f;}
 
 .stats {margin-top:12px;text-align:center;font-size:0.95em;color:#cbd5e1;}
-#manualCodeContainer{margin-top:15px;display:flex;gap:10px;justify-content:center;align-items:center;}
-#manualCodeInput{padding:8px 10px;border-radius:8px;border:none;font-size:1em;}
-#manualCodeBtn{padding:8px 15px;border:none;border-radius:8px;background:#10b981;color:#fff;cursor:pointer;}
-#manualCodeBtn:hover{background:#0f9c6e;}
+#manualCodeContainer{margin-top:15px;display:flex;gap:10px;justify-content:center;align-items:center; width: 70%;}
+#manualCodeInput{padding:8px 10px;border-radius:8px;border:none;font-size:1em; width:100%; }
+#manualCodeBtn{padding:8px 15px;border:none;border-radius:8px;background:#1e90ff;color:#fff;cursor:pointer; width: 50%;}
+#manualCodeBtn:hover{background:#007acc;}
 #sessionPopup{
 position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:2000;
 }
@@ -83,8 +116,8 @@ padding: 10px;
 }
 /* === تعديل .material-btn ليبدو مثل .pdf-list a === */
 .material-btn{
-width: auto; /* تعديل */
-height: auto; /* تعديل */
+width: 100px; /* تعديل */
+height: 100px; /* تعديل */
 background: #2c2c2c; /* تعديل */
 color: #fff;
 font-weight: normal; /* تعديل */
@@ -132,21 +165,23 @@ width: 100%;
 }
 /* === تعديل h3 ليبدو مثل .model-title === */
 .subject-section h3 {
-text-align: right; /* تعديل لـ RTL */
+/* text-align: right;  تعديل لـ RTL */
 color: #ffffff;
 margin-bottom: 0;
-font-family: "IBM Plex Sans Arabic", sans-serif;
+/* font-family: "IBM Plex Sans Arabic", sans-serif; */
 background-color: #2c2c2c;
 padding: 10px;
 border-bottom: 1px solid #333;
-font-size: 1em;
+/* font-size: 1em; */
 border-radius: 10px 10px 0 0;
+/* flex-direction: row-reverse; */
 
 /* === إضافات لجعله قابلاً للنقر === */
 cursor: pointer;
 display: flex;
 justify-content: space-between;
 align-items: center;
+font-size: 1em;
 }
 /* === إضافة حالة H:OVER === */
 .subject-section h3:hover {
@@ -156,15 +191,17 @@ background-color: #333;
 /* === تعديل .pdf-grid ليبدو مثل .con === */
 .pdf-grid {
 display: grid;
-grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); /* تعديل */
+grid-template-columns: repeat(3, 1fr); /* تعديل */
 gap: 10px;
 justify-content: center;
+justify-items: center;
 padding: 10px; /* إضافة */
+direction: ltr; /* === هذا هو التعديل لعكس الترتيب === */
 }
 /* === تعديل .pdf-box ليبدو مثل .pdf-list a === */
 .pdf-box {
-width: 70px;  /* تعديل */
-height: auto; /* تعديل */
+width: 90px;  /* تعديل */
+/* height: 100px;  تعديل */
 background: #2c2c2c; /* تعديل */
 color: #f1f1f1;
 border: 2px solid #2c2c2c; /* تعديل */
@@ -190,104 +227,230 @@ color: #f1f1f1; /* تعديل */
 <body>
 <div id="loader">
   <div class="spinner"></div>
-  <p>جاري التحقق من الاتصال...</p>
+  <p>Vérification de la connexion...</p>
 </div>
 <div id="overlay">
   <video id="video" autoplay></video>
-  <div id="message">يرجى مسح رمز الـ QR أو إدخال الكود للدخول...</div>
+  <div id="message">Veuillez scanner le code QR ou saisir le code pour entrer...</div>
   <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
   <div id="manualCodeContainer">
-    <input type="text" id="manualCodeInput" placeholder="أدخل الكود هنا" />
-    <button id="manualCodeBtn">تحقق</button>
+    <input type="text" id="manualCodeInput" placeholder="Entrez le code ici" />
+    <button id="manualCodeBtn">vérification</button>
   </div>
 </div>
 <div id="sessionPopup">
   <div id="sessionPopupContent">
-    🔒 انتهت الجلسة
+    SESSION TERMINEE 🔒
     <br>
-    <button id="popupBtn">حسنًا</button>
+    <button id="popupBtn">OK</button>
   </div>
 </div>
 <div class="container" id="content">
   <div class="selection-container" id="selectionContainer">
     <h2>🇵🇸</h2>
+        <h3> 👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️ </h3>
+            <h2></h2>
     <h2>Choisissez le semestre</h2>
+    
     <div class="contents">
-      <a href="#" class="btn" onclick="goToPage('contentS1')">S1</a>
       <a href="#" class="btn" onclick="goToPage('contentS2')">S2</a>
-    </div>
+      <a href="#" class="btn" onclick="goToPage('contentS1')">S1</a>
+      </div>
+
+                    <h4>X</h4>
+
   </div>
   <div class="content-container" id="contentS1" style="display:none;">
-    <h2>🇵🇸 Semestre 1</h2>
-    <button class="btn" onclick="returnToSelection()">RETOUR</button>
-    
+    <h2>🇵🇸</h2>
+    <h2>Semestre 1</h2>
+    <div class="button-row">
+        <button class="btn" onclick="returnToSelection()">RETOUR</button>
+        <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
+    </div>
+        
     <button class="myword1">
       سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
     </button> 
     
     <div class="subject-section">
-      <h3 onclick="togglePdfList('math-grid')">رياضيات <span>▼</span></h3>
-      <div class="pdf-grid" id="math-grid" style="display: none;">
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>        
-                <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-1/view?embedded=true')">PDF 1</div>
+      <h3 onclick="togglePdfList('mds-grid')">MDS<span>▼</span></h3>
+      <div class="pdf-grid" id="mds-grid" style="display: none;">
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
 
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/MATH-4/view?embedded=true')">PDF 4</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/MATH-5/view?embedded=true')">PDF 5</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/MATH-6/view?embedded=true')">PDF 6</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/MATH-7/view?embedded=true')">PDF 7</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/MATH-8/view?embedded=true')">PDF 8</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/MATH-9/view?embedded=true')">PDF 9</div>
       </div>
     </div>
     <div class="subject-section">
-      <h3 onclick="togglePdfList('phys-grid')">فيزياء <span>▼</span></h3>
-      <div class="pdf-grid" id="phys-grid" style="display: none;">
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-1/view?embedded=true')">PDF 1</div>
-                <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-1/view?embedded=true')">PDF 1</div>
-                        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-1/view?embedded=true')">PDF 1</div>
+      <h3 onclick="togglePdfList('dds-grid')">DDS<span>▼</span></h3>
+      <div class="pdf-grid" id="dds-grid" style="display: none;">
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
 
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-2/view?embedded=true')">PDF 2</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-3/view?embedded=true')">PDF 3</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-4/view?embedded=true')">PDF 4</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-5/view?embedded=true')">PDF 5</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-6/view?embedded=true')">PDF 6</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-7/view?embedded=true')">PDF 7</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-8/view?embedded=true')">PDF 8</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/PHYS-9/view?embedded=true')">PDF 9</div>
+
       </div>
     </div>
+
+
     <div class="subject-section">
-      <h3 onclick="togglePdfList('chem-grid')">كيمياء <span>▼</span></h3>
-      <div class="pdf-grid" id="chem-grid" style="display: none;">
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-1/view?embedded=true')">PDF 1</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-2/view?embedded=true')">PDF 2</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-3/view?embedded=true')">PDF 3</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-4/view?embedded=true')">PDF 4</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-5/view?embedded=true')">PDF 5</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-6/view?embedded=true')">PDF 6</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-7/view?embedded=true')">PDF 7</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-8/view?embedded=true')">PDF 8</div>
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/CHEM-9/view?embedded=true')">PDF 9</div>
+      <h3 onclick="togglePdfList('beton-grid')">BETON<span>▼</span></h3>
+      <div class="pdf-grid" id="beton-grid" style="display: none;">
+
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
       </div>
     </div>
+
+        <div class="subject-section">
+      <h3 onclick="togglePdfList('charpente-grid')">CHARPANTE<span>▼</span></h3>
+      <div class="pdf-grid" id="charpente-grid" style="display: none;">
+
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
+      </div>
+    </div>
+
+
+
+                <div class="subject-section">
+      <h3 onclick="togglePdfList('thermique-grid')">THERMIQUE<span>▼</span></h3>
+      <div class="pdf-grid" id="thermique-grid" style="display: none;">
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
+
+      </div>
+    </div>
+
+
+                    <div class="subject-section">
+      <h3 onclick="togglePdfList('python-grid')">PYTHON<span>▼</span></h3>
+      <div class="pdf-grid" id="python-grid" style="display: none;">
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
+
+      </div>
+    </div>
+    
+
+                    <div class="subject-section">
+      <h3 onclick="togglePdfList('innovants-grid')">METHODE INNOV<span>▼</span></h3>
+      <div class="pdf-grid" id="innovants-grid" style="display: none;">
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
+
+      </div>
+    </div>
+
+
+                        <div class="subject-section">
+      <h3 onclick="togglePdfList('exprimentale-grid')">METHODE EXPRI<span>▼</span></h3>
+      <div class="pdf-grid" id="exprimentale-grid" style="display: none;">
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
+
+      </div>
+    </div>
+
+                    <div class="subject-section">
+      <h3 onclick="togglePdfList('batiment-grid')">BATIMENT<span>▼</span></h3>
+      <div class="pdf-grid" id="batiment-grid" style="display: none;">
+
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>         
+        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>         
+
+      </div>
+    </div>
+
+
+              <h4>X</h4>
   </div>
   <div class="content-container" id="contentS2" style="display:none;">
-    <h2>🇵🇸 Semestre 2</h2>
-    <button class="btn" onclick="returnToSelection()">RETOUR</button>
-    
+    <h2>🇵🇸</h2>
+    <h2>Semestre 2</h2>
+    <div class="button-row">
+        <button class="btn" onclick="returnToSelection()">RETOUR</button>
+        <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
+    </div>
+        
     <button class="myword1">
       سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
     </button> 
 
     <div class="materials">
-      <div class="material-btn" onclick="openPDF('https://drive.google.com/file/d/4jkl/view?embedded=true')">إلكترونيات</div>
-      <div class="material-btn" onclick="openPDF('https://drive.google.com/file/d/5mno/view?embedded=true')">ميكانيك</div>
-      <div class="material-btn" onclick="openPDF('https://drive.google.com/file/d/6pqr/view?embedded=true')">هندسة مدنية</div>
+
     </div>
   </div>
 </div>
 <div class="pdf-container" id="pdfContainer">
-  <button class="pdf-close-btn" onclick="closePDF()">رجوع</button>
+  <button class="pdf-close-btn" onclick="closePDF()">RETOUR</button>
   <iframe id="pdfFrame" src=""></iframe>
 </div>
 <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
@@ -297,14 +460,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebas
 import { getDatabase, ref, get, set, onValue, onDisconnect, update, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
-  authDomain: "my-id-19724.firebaseapp.com",
-  databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
-  projectId: "my-id-19724",
-  storageBucket: "my-id-19724.appspot.com",
-  messagingSenderId: "788057820357",
-  appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
-  measurementId: "G-5QX27XCFK6"
+apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
+authDomain: "my-id-19724.firebaseapp.com",
+databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
+projectId: "my-id-19724",
+storageBucket: "my-id-19724.appspot.com",
+messagingSenderId: "788057820357",
+appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
+measurementId: "G-5QX27XCFK6"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -334,159 +497,174 @@ let allowedCodesSet = new Set();
 
 /* Fingerprint */
 async function getDeviceFingerprint() {
-  if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
-  const fp = await FingerprintJS.load();
-  const result = await fp.get();
-  const deviceId = result.visitorId;
-  localStorage.setItem("deviceId", deviceId);
-  return deviceId;
+if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
+const fp = await FingerprintJS.load();
+const result = await fp.get();
+const deviceId = result.visitorId;
+localStorage.setItem("deviceId", deviceId);
+return deviceId;
 }
 
 function getDeviceName() {
-  try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; } 
-  catch { return "Unknown Device"; }
+try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; } 
+catch { return "Unknown Device"; }
 }
 
 function getLocation() {
-  return new Promise((resolve) => {
-    if (!("geolocation" in navigator)) return resolve(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({lat: pos.coords.latitude,lng: pos.coords.longitude,accuracy: pos.coords.accuracy}),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  });
+return new Promise((resolve) => {
+if (!("geolocation" in navigator)) return resolve(null);
+navigator.geolocation.getCurrentPosition(
+(pos) => resolve({lat: pos.coords.latitude,lng: pos.coords.longitude,accuracy: pos.coords.accuracy}),
+() => resolve(null),
+{ enableHighAccuracy: true, timeout: 8000 }
+);
+});
 }
 
 /* كاميرا */
 async function startCamera() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = stream;
-    streamRef = stream;
-    scanning = true;
-    scanLoop();
-  } catch (err) {
-    message.textContent = "فشل تشغيل الكاميرا!";
-    console.error(err);
-  }
+try {
+const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+video.srcObject = stream;
+streamRef = stream;
+scanning = true;
+scanLoop();
+} catch (err) {
+message.textContent = "L'appareil photo n'a pas pu démarrer !";
+console.error(err);
+}
 }
 function stopCamera() { scanning=false; if(streamRef) streamRef.getTracks().forEach(t=>t.stop()); video.srcObject=null; streamRef=null; }
 
 /* مسح QR */
 async function scanLoop() {
-  if (!scanning) return;
-  if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-    if (code) await handleScannedCode(code.data.trim());
-  }
-  requestAnimationFrame(scanLoop);
+if (!scanning) return;
+if (video.readyState === video.HAVE_ENOUGH_DATA) {
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+const code = jsQR(imageData.data, canvas.width, canvas.height);
+if (code) await handleScannedCode(code.data.trim());
+}
+requestAnimationFrame(scanLoop);
 }
 
 /* تحليل QR من صورة مرفوعة */
 fileInput.addEventListener("change", async (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const img = new Image();
-  img.onload = async ()=>{
-    canvas.width=img.width; canvas.height=img.height;
-    ctx.drawImage(img,0,0);
-    const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-    if(code) await handleScannedCode(code.data.trim());
-    else message.textContent="لم يتم العثور على رمز QR!";
-  };
-  img.src = URL.createObjectURL(file);
+const file = e.target.files[0];
+if(!file) return;
+const img = new Image();
+img.onload = async ()=>{
+canvas.width=img.width; canvas.height=img.height;
+ctx.drawImage(img,0,0);
+const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+const code = jsQR(imageData.data, canvas.width, canvas.height);
+if(code) await handleScannedCode(code.data.trim());
+else message.textContent="Aucun code QR trouvé!";
+};
+img.src = URL.createObjectURL(file);
 });
 
 /* load allowed codes */
 function startAllowedCodesWatcher() {
-  onValue(ref(db,'allowedCodes'), snap => {
-    const val = snap.val()||{};
-    allowedCodesSet = new Set(Object.keys(val));
-  });
+onValue(ref(db,'allowedCodes'), snap => {
+const val = snap.val()||{};
+allowedCodesSet = new Set(Object.keys(val));
+});
 }
 
 /* handle code (QR أو password) */
 async function handleScannedCode(scanned) {
-  if (!allowedCodesSet.has(scanned)) { message.textContent = "كود غير صحيح ❌"; return; }
-  const codeRef = ref(db, "codes/" + scanned);
-  const snapshot = await get(codeRef);
-  const deviceId = await getDeviceFingerprint();
-  deviceIdGlobal = deviceId;
-  
-  if (!snapshot.exists() || snapshot.val().usedBy === deviceId) {
-    if(!snapshot.exists()) await set(codeRef,{used:true,usedBy:deviceId,lastUsedAt:Date.now()});
-    await grantAccess(scanned);
-  } else {
-    message.textContent = "❌ هذا الكود مستعمل من جهاز آخر";
-  }
+if (!allowedCodesSet.has(scanned)) { message.textContent = "Code invalide ❌"; return; }
+const codeRef = ref(db, "codes/" + scanned);
+const snapshot = await get(codeRef);
+const deviceId = await getDeviceFingerprint();
+deviceIdGlobal = deviceId;
+
+if (!snapshot.exists() || snapshot.val().usedBy === deviceId) {
+if(!snapshot.exists()) await set(codeRef,{used:true,usedBy:deviceId,lastUsedAt:Date.now()});
+await grantAccess(scanned);
+} else {
+message.textContent = "❌ Ce code est utilisé depuis un autre appareil";
+}
 }
 
 /* grant access */
 async function grantAccess(scanned) {
-  message.textContent="تم التحقق بنجاح ✅";
-  stopCamera();
-  const deviceId = await getDeviceFingerprint();
-  deviceIdGlobal=deviceId;
-  const deviceName=getDeviceName();
-  const location=await getLocation();
-  const now=Date.now();
-  const sessionRef=ref(db,`sessions/${deviceId}`);
-  const sessionData={code:scanned,deviceName,location:location||null,enteredAt:now,online:true,lastSeen:null,lastHeartbeat:now,exitAt:null};
-  
-  try {
-    const visitorRef=ref(db,`visitors/${deviceId}`);
-    const visitorSnap=await get(visitorRef);
-    await set(sessionRef,sessionData);
-    await onDisconnect(sessionRef).update({online:false,lastSeen:Date.now(),exitAt:Date.now()});
-    await update(ref(db,`codes/${scanned}`),{used:true,usedBy:deviceId,lastUsedAt:Date.now()});
-    if(!visitorSnap.exists()){
-      await set(visitorRef,{firstSeen:Date.now(),deviceName});
-      const totalRef=ref(db,`counters/totalVisitors`);
-      await runTransaction(totalRef,current=>(current||0)+1);
-    } else { await update(visitorRef,{lastSeen:Date.now(),deviceName}); }
-  
-    localStorage.setItem("qr_access_granted","true");
-    localStorage.setItem("qr_code_value",scanned);
-    setTimeout(()=>{
-      overlay.style.display="none"; content.style.display="flex";
-      startRealtimeSessionWatcher(); startHeartbeat(deviceId);
-    },800);
-  } catch(err){ console.error("grantAccess error:",err); message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى.";}
+message.textContent="Vérifié avec succès ✅";
+stopCamera();
+const deviceId = await getDeviceFingerprint();
+deviceIdGlobal=deviceId;
+const deviceName=getDeviceName();
+const location=await getLocation();
+const now=Date.now();
+const sessionRef=ref(db,`sessions/${deviceId}`);
+const sessionData={code:scanned,deviceName,location:location||null,enteredAt:now,online:true,lastSeen:null,lastHeartbeat:now,exitAt:null};
+
+try {
+const visitorRef=ref(db,`visitors/${deviceId}`);
+const visitorSnap=await get(visitorRef);
+await set(sessionRef,sessionData);
+await onDisconnect(sessionRef).update({online:false,lastSeen:Date.now(),exitAt:Date.now()});
+await update(ref(db,`codes/${scanned}`),{used:true,usedBy:deviceId,lastUsedAt:Date.now()});
+if(!visitorSnap.exists()){
+await set(visitorRef,{firstSeen:Date.now(),deviceName});
+const totalRef=ref(db,`counters/totalVisitors`);
+await runTransaction(totalRef,current=>(current||0)+1);
+} else { await update(visitorRef,{lastSeen:Date.now(),deviceName}); }
+
+localStorage.setItem("qr_access_granted","true");
+localStorage.setItem("qr_code_value",scanned);
+    
+    // *** إضافة: تعيين الصفحة الافتراضية عند الدخول أول مرة ***
+sessionStorage.setItem('currentPageId', 'selectionContainer');
+    
+setTimeout(()=>{
+overlay.style.display="none"; content.style.display="flex";
+// ملاحظة: لن نحتاج لإظهار الصفحة هنا، دالة init ستهتم بذلك
+startRealtimeSessionWatcher(); startHeartbeat(deviceId);
+},800);
+} catch(err){ console.error("grantAccess error:",err); message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى.";}
 }
 
 /* heartbeat كل ثانية */
 function startHeartbeat(deviceId){
-  if(heartbeatIntervalId) clearInterval(heartbeatIntervalId);
-  heartbeatIntervalId=setInterval(async()=>{
-    try{
-      await update(ref(db,`sessions/${deviceId}`),{lastHeartbeat:Date.now(),online:true});
-    }catch(e){console.warn("Heartbeat failed:",e);}
-  },1000);
+if(heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+heartbeatIntervalId=setInterval(async()=>{
+try{
+// التأكد من أن الصفحة لا تزال مرئية قبل إرسال النبض
+if (document.hidden) {
+stopHeartbeat();
+updateSessionOffline();
+return;
+}
+await update(ref(db,`sessions/${deviceId}`),{lastHeartbeat:Date.now(),online:true});
+}catch(e){console.warn("Heartbeat failed:",e);}
+},1000); // تم تقليل المدة لثانية واحدة لزيادة الدقة
 }
 function stopHeartbeat(){ if(heartbeatIntervalId) clearInterval(heartbeatIntervalId); heartbeatIntervalId=null; }
 
 /* متابعة مستمرة للجلسة */
 async function startRealtimeSessionWatcher(){
-  const savedCode=localStorage.getItem("qr_code_value");
-  if(!savedCode) return;
-  const deviceId = await getDeviceFingerprint();
-  const codeRef=ref(db,"codes/"+savedCode);
-  onValue(codeRef, snap=>{
-    if(!snap.exists() || snap.val().usedBy!==deviceId){
-      stopCamera(); overlay.style.display="flex"; content.style.display="none";
-      sessionPopup.style.display="flex";
-      localStorage.removeItem("qr_access_granted");
-      localStorage.removeItem("qr_code_value");
-      stopHeartbeat();
-      updateSessionOffline();
-    }
-  });
+const savedCode=localStorage.getItem("qr_code_value");
+if(!savedCode) return;
+const deviceId = await getDeviceFingerprint();
+const codeRef=ref(db,"codes/"+savedCode);
+onValue(codeRef, snap=>{
+if(!snap.exists() || snap.val().usedBy!==deviceId){
+stopCamera(); overlay.style.display="flex"; content.style.display="none";
+sessionPopup.style.display="flex";
+localStorage.removeItem("qr_access_granted");
+localStorage.removeItem("qr_code_value");
+      
+      // *** إضافة: مسح الحالة عند الخروج ***
+sessionStorage.removeItem('currentPageId');
+      
+stopHeartbeat();
+updateSessionOffline();
+}
+});
 }
 
 /* popup */
@@ -494,108 +672,198 @@ popupBtn.onclick=()=> location.reload();
 
 /* === (init) الدالة المُعدلة === */
 (async()=>{
-  // 1. عرض شاشة التحميل
-  loader.style.display = "flex"; 
-  
-  // 2. جلب بصمة الجهاز وبدء مراقبة الأكواد
-  const deviceId = await getDeviceFingerprint(); 
-  deviceIdGlobal = deviceId;
-  startAllowedCodesWatcher(); 
-  
-  // 3. التحقق من وجود جلسة سابقة صالحة
-  const savedCode = localStorage.getItem("qr_code_value");
-  let sessionIsValid = false;
+// 1. عرض شاشة التحميل
+loader.style.display = "flex"; 
 
-  if (savedCode) {
-    try {
-      // التحقق من الكود المحفوظ في قاعدة البيانات
-      const snap = await get(ref(db, "codes/" + savedCode));
-      if (snap.exists() && snap.val().usedBy === deviceId) {
-        sessionIsValid = true;
-      }
-    } catch (e) {
-      console.error("Error checking saved session:", e);
-      sessionIsValid = false; // أي خطأ يعني جلسة غير صالحة
+// 2. جلب بصمة الجهاز وبدء مراقبة الأكواد
+const deviceId = await getDeviceFingerprint(); 
+deviceIdGlobal = deviceId;
+startAllowedCodesWatcher(); 
+
+// 3. التحقق من وجود جلسة سابقة صالحة
+const savedCode = localStorage.getItem("qr_code_value");
+let sessionIsValid = false;
+
+if (savedCode) {
+try {
+// التحقق من الكود المحفوظ في قاعدة البيانات
+const snap = await get(ref(db, "codes/" + savedCode));
+if (snap.exists() && snap.val().usedBy === deviceId) {
+sessionIsValid = true;
+}
+} catch (e) {
+console.error("Error checking saved session:", e);
+sessionIsValid = false; // أي خطأ يعني جلسة غير صالحة
+}
+}
+
+// 4. إخفاء شاشة التحميل واتخاذ القرار
+loader.style.display = "none"; 
+
+if (sessionIsValid) {
+// 5. الجلسة صالحة: عرض المحتوى
+overlay.style.display = "none";
+content.style.display = "flex";
+
+    // *** إضافة: استعادة الحالة عند التحديث ***
+const savedPageId = sessionStorage.getItem('currentPageId');
+if (savedPageId && savedPageId !== 'selectionContainer') {
+goToPage(savedPageId); // الدالة goToPage ستهتم بالإخفاء والإظهار
+} else {
+        // إذا كانت 'selectionContainer' أو null، أظهر شاشة الاختيار
+        returnToSelection(); 
     }
-  }
-
-  // 4. إخفاء شاشة التحميل واتخاذ القرار
-  loader.style.display = "none"; 
-
-  if (sessionIsValid) {
-    // 5. الجلسة صالحة: عرض المحتوى
-    overlay.style.display = "none";
-    content.style.display = "flex";
-    startRealtimeSessionWatcher(); // بدء مراقبة الجلسة (للخروج)
-    startHeartbeat(deviceId);    // بدء إرسال نبضات القلب
-  } else {
-    // 6. الجلسة غير صالحة: مسح البيانات القديمة وعرض شاشة QR
-    localStorage.removeItem("qr_access_granted");
-    localStorage.removeItem("qr_code_value");
+// *** نهاية الإضافة ***
     
-    overlay.classList.add("show");
-    startCamera();
-  }
+startRealtimeSessionWatcher(); // بدء مراقبة الجلسة (للخروج)
+// التأكد من أننا أونلاين فقط إذا كانت الصفحة مرئية
+if (!document.hidden) {
+startHeartbeat(deviceId); 
+updateSessionOnline(); // تسجيل أننا أونلاين عند التحميل
+} else {
+updateSessionOffline(); // تسجيل أننا أوفلاين إذا تم تحميل الصفحة في الخلفية
+}
+} else {
+// 6. الجلسة غير صالحة: مسح البيانات القديمة وعرض شاشة QR
+localStorage.removeItem("qr_access_granted");
+localStorage.removeItem("qr_code_value");
+    
+    // *** إضافة: مسح الحالة عند التحقق الفاشل ***
+sessionStorage.removeItem('currentPageId');
+
+overlay.classList.add("show");
+startCamera();
+}
 })();
 /* === نهاية دالة init المُعدلة === */
 
 /* navigation */
 window.goToPage=function(pageId){
-  document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
-  document.getElementById('selectionContainer').style.display='none';
-  document.getElementById(pageId).style.display='block';
+document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
+document.getElementById('selectionContainer').style.display='none';
+document.getElementById(pageId).style.display='block';
+  
+  // *** إضافة: حفظ الحالة ***
+sessionStorage.setItem('currentPageId', pageId);
 };
 window.returnToSelection=function(){
-  document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
-  document.getElementById('selectionContainer').style.display='block';
+document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
+document.getElementById('selectionContainer').style.display='block';
+  
+  // *** إضافة: حفظ الحالة ***
+sessionStorage.setItem('currentPageId', 'selectionContainer');
 };
 
 /* === دالة الأكورديون المضافة === */
 window.togglePdfList = function(id) {
-  // جلب كل قوائم المواد في S1
-  const allPdfLists = document.querySelectorAll('#contentS1 .pdf-grid');
-  // جلب كل عناوين المواد في S1
-  const allTitles = document.querySelectorAll('#contentS1 .subject-section h3');
-  
-  const pdfList = document.getElementById(id);
-  if (!pdfList) return;
-    
-  // جلب الأيقونة الخاصة بالعنوان المضغوط
-  const titleIcon = document.querySelector(`[onclick="togglePdfList('${id}')"] span`);
-  
-  // التحقق إذا كنا سنقوم بالفتح (لأنه مغلق حاليًا)
-  const isOpening = (pdfList.style.display === "none" || pdfList.style.display === "");
-  
-  // 1. إغلاق جميع القوائم
-  allPdfLists.forEach(list => {
-    list.style.display = "none";
-  });
-    
-  // 2. إعادة تعيين جميع الأيقونات إلى "▼"
-  allTitles.forEach(title => {
-    const span = title.querySelector('span');
-    if (span) span.textContent = "▼";
-  });
-  
-  // 3. فتح القائمة المستهدفة فقط إذا كانت مغلقة
-  if (isOpening) {
-    pdfList.style.display = "grid";
-    if (titleIcon) titleIcon.textContent = "▲";
-  }
-  // (إذا كانت مفتوحة بالفعل، فإن الخطوة 1 و 2 تكون قد أغلقتها بالفعل)
+// جلب كل قوائم المواد في S1
+const allPdfLists = document.querySelectorAll('#contentS1 .pdf-grid');
+// جلب كل عناوين المواد في S1
+const allTitles = document.querySelectorAll('#contentS1 .subject-section h3');
+
+const pdfList = document.getElementById(id);
+if (!pdfList) return;
+
+// جلب الأيقونة الخاصة بالعنوان المضغوط
+const titleIcon = document.querySelector(`[onclick="togglePdfList('${id}')"] span`);
+
+// التحقق إذا كنا سنقوم بالفتح (لأنه مغلق حاليًا)
+const isOpening = (pdfList.style.display === "none" || pdfList.style.display === "");
+
+// 1. إغلاق جميع القوائم
+allPdfLists.forEach(list => {
+list.style.display = "none";
+});
+
+// 2. إعادة تعيين جميع الأيقونات إلى "▼"
+allTitles.forEach(title => {
+const span = title.querySelector('span');
+if (span) span.textContent = "▼";
+});
+
+// 3. فتح القائمة المستهدفة فقط إذا كانت مغلقة
+if (isOpening) {
+pdfList.style.display = "grid";
+if (titleIcon) titleIcon.textContent = "▲";
+}
+// (إذا كانت مفتوحة بالفعل، فإن الخطوة 1 و 2 تكون قد أغلقتها بالفعل)
 }
 /* === نهاية الدالة المضافة === */
 
 
 /* تحديث الجلسة عند الخروج */
 async function updateSessionOffline(){
-  try{
-    const deviceId=deviceIdGlobal||localStorage.getItem("deviceId");
-    if(deviceId) await update(ref(db,`sessions/${deviceId}`),{online:false,lastSeen:Date.now(),exitAt:Date.now()});
-  } catch(err){ console.warn(err);}
+try{
+const deviceId=deviceIdGlobal||localStorage.getItem("deviceId");
+if(deviceId) {
+const sessionRef = ref(db, `sessions/${deviceId}`);
+// التحقق من وجود الجلسة قبل محاولة التحديث
+const snap = await get(sessionRef);
+if (snap.exists()) {
+ await update(sessionRef, {online:false, lastSeen:Date.now(), exitAt:Date.now()});
+}
+}
+} catch(err){ console.warn(err);}
 }
 window.addEventListener("beforeunload", updateSessionOffline);
 window.addEventListener("unload", updateSessionOffline);
+
+
+// ==========================================================
+// === بداية الكود المضاف لتتبع الحالة (Online/Offline) ===
+// ==========================================================
+
+/* تحديث الجلسة عند العودة (جديد) */
+async function updateSessionOnline(){
+try{
+const deviceId = deviceIdGlobal || await getDeviceFingerprint();
+if(!deviceId) return;
+
+// إعادة فحص سريع للجلسة قبل إعلان "online"
+const savedCode = localStorage.getItem("qr_code_value");
+if (!savedCode) return; 
+
+const codeSnap = await get(ref(db, "codes/" + savedCode));
+
+// التأكد من أن الكود لا يزال صالحًا ولهذا الجهاز
+if (codeSnap.exists() && codeSnap.val().usedBy === deviceId) {
+// الجلسة صالحة، قم بالتحديث
+const sessionRef = ref(db, `sessions/${deviceId}`);
+await update(sessionRef, {online:true, lastHeartbeat:Date.now(), exitAt:null});
+// أعد تشغيل النبضات فقط إذا كانت متوقفة
+if(!heartbeatIntervalId) startHeartbeat(deviceId);
+} else {
+// الجلسة لم تعد صالحة (ربما تم طرده أثناء غيابه)
+// لا تفعل شيئاً، startRealtimeSessionWatcher سيتعامل مع هذا
+// وسيقوم بإظهار النافذة المنبثقة
+stopHeartbeat();
+}
+} catch(err){ console.warn("updateSessionOnline failed:", err); }
+}
+
+/* معالجة تغيير ظهور الصفحة (جديد) */
+function handleVisibilityChange() {
+  // لا تفعل شيئاً إذا لم يكن المستخدم قد سجل دخوله أصلاً
+if (!localStorage.getItem("qr_code_value")) return; 
+
+if (document.hidden) {
+// الصفحة مخفية - المستخدم أوفلاين
+stopHeartbeat();
+updateSessionOffline();
+} else {
+// الصفحة ظاهرة - المستخدم أونلاين
+updateSessionOnline();
+}
+}
+
+// استخدام واجهة برمجة التطبيقات لظهور الصفحة (جديد)
+// هذا هو المستمع الرئيسي لتبديل التبويبات والتطبيقات
+document.addEventListener("visibilitychange", handleVisibilityChange, false);
+
+// ==========================================================
+// === نهاية الكود المضاف لتتبع الحالة (Online/Offline) ===
+// ==========================================================
+
 
 /* تحقق من كلمة المرور اليدوية */
 manualCodeBtn.onclick = async ()=>{ const code = manualCodeInput.value.trim(); if(code) await handleScannedCode(code); };
@@ -603,13 +871,31 @@ manualCodeBtn.onclick = async ()=>{ const code = manualCodeInput.value.trim(); i
 /* PDF */
 // --- يجب تعريف هذه الدوال في النطاق العام (window) ---
 window.openPDF=function(url){
-  pdfFrame.src=url;
-  pdfContainer.style.display='flex';
+pdfFrame.src=url;
+pdfContainer.style.display='flex';
 }
 window.closePDF=function(){
-  pdfContainer.style.display='none';
-  pdfFrame.src='';
+pdfContainer.style.display='none';
+pdfFrame.src='';
 }
+
+
+/* no touch 
+document.addEventListener('contextmenu', function(event) {
+event.preventDefault();
+});
+
+document.addEventListener('keydown', function(event) {
+if (event.key === 'F12' || 
+(event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
+(event.ctrlKey && event.key === 'U')) {
+event.preventDefault();
+}
+});
+
+
+*/
+
 </script>
 </body>
 </html>

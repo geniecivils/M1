@@ -29,14 +29,14 @@ cursor: pointer;
 h4{color: #333; font-size: 1.5em; text-align: center;}
 h3{text-align: center;}
 
-body{    display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #121212;
-      color: #f1f1f1;
-      height: 100%;
-      padding: 10px;
-      margin-top: 10px;}
+body{  display: flex;
+   justify-content: center;
+   align-items: center;
+   background-color: #121212;
+   color: #f1f1f1;
+   height: 100%;
+   padding: 10px;
+   margin-top: 10px;}
 #loader{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;}
 .spinner{border:6px solid #333;border-top:6px solid #007acc;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
@@ -45,13 +45,13 @@ body{    display: flex;
 #overlay.show{opacity:1;}
 video{width:300px;height:220px;border-radius:10px;border:2px solid #007acc;background:#000;object-fit:cover}
 #message{margin-top:10px;font-size:1.1em;text-align:center;}
-.container{    display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      width: 100%;
-      max-width: 600px;
-      margin: auto;}
+.container{  display: none;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+   width: 100%;
+   max-width: 600px;
+   margin: auto;}
 .selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.5);width:100%;}
 .selection-container h2,.content-container h2{text-align:center;padding-bottom:10px;}
 .contents{display:flex;justify-content:center;flex-wrap:wrap;flex-direction: row-reverse;}
@@ -60,18 +60,18 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #007acc;backg
 
 /* === ستايل زر التحديث المضاف === */
 .button-row {
-    display: flex;
-    gap: 10px;
-    justify-content: center; /* سيبدأ من اليمين بسبب dir="rtl" */
-    width: 100%;
-    /* margin-bottom: 10px;  لإضافة مسافة تحت الأزرار */
-    /* flex-direction: row-reverse; */
+  display: flex;
+  gap: 10px;
+  justify-content: center; /* سيبدأ من اليمين بسبب dir="rtl" */
+  width: 100%;
+  /* margin-bottom: 10px; لإضافة مسافة تحت الأزرار */
+  /* flex-direction: row-reverse; */
 }
 .btn-refresh {
-    background-color: #28a745; /* لون أخضر */
+  background-color: #28a745; /* لون أخضر */
 }
 .btn-refresh:hover {
-    background-color: #218838; /* أخضر أغمق عند المرور */
+  background-color: #218838; /* أخضر أغمق عند المرور */
 }
 
 /* === نمط البانر من الديزاين المستهدف === */
@@ -165,7 +165,7 @@ width: 100%;
 }
 /* === تعديل h3 ليبدو مثل .model-title === */
 .subject-section h3 {
-/* text-align: right;  تعديل لـ RTL */
+/* text-align: right; تعديل لـ RTL */
 color: #ffffff;
 margin-bottom: 0;
 /* font-family: "IBM Plex Sans Arabic", sans-serif; */
@@ -200,8 +200,8 @@ direction: ltr; /* === هذا هو التعديل لعكس الترتيب === */
 }
 /* === تعديل .pdf-box ليبدو مثل .pdf-list a === */
 .pdf-box {
-width: 90px;  /* تعديل */
-/* height: 100px;  تعديل */
+width: 90px; /* تعديل */
+/* height: 100px; تعديل */
 background: #2c2c2c; /* تعديل */
 color: #f1f1f1;
 border: 2px solid #2c2c2c; /* تعديل */
@@ -226,161 +226,158 @@ color: #f1f1f1; /* تعديل */
 </head>
 <body>
 <div id="loader">
-  <div class="spinner"></div>
-  <p>Vérification de la connexion...</p>
+ <div class="spinner"></div>
+ <p>Vérification de la connexion...</p>
 </div>
 <div id="overlay">
-  <video id="video" autoplay></video>
-  <div id="message">Veuillez scanner le code QR ou saisir le code pour entrer...</div>
-  <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
-  <div id="manualCodeContainer">
-    <input type="text" id="manualCodeInput" placeholder="Entrez le code ici" />
-    <button id="manualCodeBtn">vérification</button>
-  </div>
+ <video id="video" autoplay></video>
+ <div id="message">Veuillez scanner le code QR ou saisir le code pour entrer...</div>
+ <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
+ <div id="manualCodeContainer">
+  <input type="text" id="manualCodeInput" placeholder="Entrez le code ici" />
+  <button id="manualCodeBtn">vérification</button>
+ </div>
 </div>
 <div id="sessionPopup">
-  <div id="sessionPopupContent">
-    SESSION TERMINEE 🔒
-    <br>
-    <button id="popupBtn">OK</button>
-  </div>
+ <div id="sessionPopupContent">
+  SESSION TERMINEE 🔒
+  <br>
+  <button id="popupBtn">OK</button>
+ </div>
 </div>
 <div class="container" id="content">
-  <div class="selection-container" id="selectionContainer">
-    <h2>🇵🇸</h2>
-        <h3> 👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️ </h3>
-            <h2></h2>
-    <h2>Choisissez le semestre</h2>
-    
-    <div class="contents">
-      <a href="#" class="btn" onclick="goToPage('contentS2')">S2</a>
-      <a href="#" class="btn" onclick="goToPage('contentS1')">S1</a>
-      </div>
+ <div class="selection-container" id="selectionContainer">
+  <h2>🇵🇸</h2>
+    <h3> 👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️ </h3>
+      <h2></h2>
+  <h2>Choisissez le semestre</h2>
+ 
+  <div class="contents">
+   <a href="#" class="btn" onclick="goToPage('contentS2')">S2</a>
+   <a href="#" class="btn" onclick="goToPage('contentS1')">S1</a>
+   </div>
 
-                <h4>X</h4>
+        <h4>X</h4>
 
+ </div>
+ <div class="content-container" id="contentS1" style="display:none;">
+  <h2>🇵🇸</h2>
+  <h2>Semestre 1</h2>
+  <div class="button-row">
+    <button class="btn" onclick="returnToSelection()">RETOUR</button>
+    <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
   </div>
-  <div class="content-container" id="contentS1" style="display:none;">
-    <h2>🇵🇸</h2>
-    <h2>Semestre 1</h2>
-    <div class="button-row">
-        <button class="btn" onclick="returnToSelection()">RETOUR</button>
-        <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
-    </div>
-        
-    <button class="myword1">
-      سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
-    </button> 
-    
-    <div class="subject-section">
-      <h3 onclick="togglePdfList('mds-grid')">MDS<span>▼</span></h3>
-      <div class="pdf-grid" id="mds-grid" style="display: none;">
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>        
+   
+  <button class="myword1">
+   سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
+  </button>
+ 
+  <div class="subject-section">
+   <h3 onclick="togglePdfList('mds-grid')">MDS<span>▼</span></h3>
+   <div class="pdf-grid" id="mds-grid" style="display: none;">
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
 
-      </div>
-    </div>
-    <div class="subject-section">
-      <h3 onclick="togglePdfList('dds-grid')">DDS<span>▼</span></h3>
-      <div class="pdf-grid" id="dds-grid" style="display: none;">
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>        
-        <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>        
+   </div>
+  </div>
+  <div class="subject-section">
+   <h3 onclick="togglePdfList('dds-grid')">DDS<span>▼</span></h3>
+   <div class="pdf-grid" id="dds-grid" style="display: none;">
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
 
 
-      </div>
-    </div>
+   </div>
+  </div>
 
+
+  <div class="subject-section">
+   <h3 onclick="togglePdfList('beton-grid')">BETON<span>▼</span></h3>
+   <div class="pdf-grid" id="beton-grid" style="display: none;">
+
+  
+   </div>
+  </div>
 
     <div class="subject-section">
-      <h3 onclick="togglePdfList('beton-grid')">BETON<span>▼</span></h3>
-      <div class="pdf-grid" id="beton-grid" style="display: none;">
+   <h3 onclick="togglePdfList('charpente-grid')">CHARPANTE<span>▼</span></h3>
+   <div class="pdf-grid" id="charpente-grid" style="display: none;">
 
-      
-      </div>
-    </div>
+   
+   </div>
+  </div>
+
+
 
         <div class="subject-section">
-      <h3 onclick="togglePdfList('charpente-grid')">CHARPANTE<span>▼</span></h3>
-      <div class="pdf-grid" id="charpente-grid" style="display: none;">
+   <h3 onclick="togglePdfList('thermique-grid')">THERMIQUE<span>▼</span></h3>
+   <div class="pdf-grid" id="thermique-grid" style="display: none;">
+  
 
-        
-      </div>
-    </div>
-
-
-
-                <div class="subject-section">
-      <h3 onclick="togglePdfList('thermique-grid')">THERMIQUE<span>▼</span></h3>
-      <div class="pdf-grid" id="thermique-grid" style="display: none;">
-      
-
-      </div>
-    </div>
-
-
-                      <div class="subject-section">
-      <h3 onclick="togglePdfList('python-grid')">PYTHON<span>▼</span></h3>
-      <div class="pdf-grid" id="python-grid" style="display: none;">
-      
-      </div>
-    </div>
-    
-
-                      <div class="subject-section">
-      <h3 onclick="togglePdfList('innovants-grid')">METHODE INNOV<span>▼</span></h3>
-      <div class="pdf-grid" id="innovants-grid" style="display: none;">
-      
-      </div>
-    </div>
-
-
-                            <div class="subject-section">
-      <h3 onclick="togglePdfList('exprimentale-grid')">METHODE EXPRI<span>▼</span></h3>
-      <div class="pdf-grid" id="exprimentale-grid" style="display: none;">
-      
-
-      </div>
-    </div>
-
-                      <div class="subject-section">
-      <h3 onclick="togglePdfList('batiment-grid')">BATIMENT<span>▼</span></h3>
-      <div class="pdf-grid" id="batiment-grid" style="display: none;">
-
-      
-      </div>
-    </div>
-
-
-                      <h4>X</h4>
+   </div>
   </div>
-  <div class="content-container" id="contentS2" style="display:none;">
-    <h2>🇵🇸</h2>
-    <h2>Semestre 2</h2>
-    <div class="button-row">
-        <button class="btn" onclick="returnToSelection()">RETOUR</button>
-        <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
-    </div>
-        
-    <button class="myword1">
-      سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
-    </button> 
 
-    <div class="materials">
 
-    </div>
+           <div class="subject-section">
+   <h3 onclick="togglePdfList('python-grid')">PYTHON<span>▼</span></h3>
+   <div class="pdf-grid" id="python-grid" style="display: none;">
+  
+   </div>
   </div>
+ 
+
+           <div class="subject-section">
+   <h3 onclick="togglePdfList('innovants-grid')">METHODE INNOV<span>▼</span></h3>
+   <div class="pdf-grid" id="innovants-grid" style="display: none;">
+  
+   </div>
+  </div>
+
+
+              <div class="subject-section">
+   <h3 onclick="togglePdfList('exprimentale-grid')">METHODE EXPRI<span>▼</span></h3>
+   <div class="pdf-grid" id="exprimentale-grid" style="display: none;">
+  
+
+   </div>
+  </div>
+
+           <div class="subject-section">
+   <h3 onclick="togglePdfList('batiment-grid')">BATIMENT<span>▼</span></h3>
+   <div class="pdf-grid" id="batiment-grid" style="display: none;">
+
+  
+   </div>
+  </div>
+
+
+           <h4>X</h4>
+ </div>
+ <div class="content-container" id="contentS2" style="display:none;">
+  <h2>🇵🇸</h2>
+  <h2>Semestre 2</h2>
+  <div class="button-row">
+    <button class="btn" onclick="returnToSelection()">RETOUR</button>
+    <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
+  </div>
+   
+  <button class="myword1">
+   سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
+  </button>
+
+  <div class="materials">
+
+  </div>
+ </div>
 </div>
 <div class="pdf-container" id="pdfContainer">
-  <button class="pdf-close-btn" onclick="closePDF()">RETOUR</button>
-  <iframe id="pdfFrame" src=""></iframe>
+ <button class="pdf-close-btn" onclick="closePDF()">RETOUR</button>
+ <iframe id="pdfFrame" src=""></iframe>
 </div>
 <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
@@ -435,7 +432,7 @@ return deviceId;
 }
 
 function getDeviceName() {
-try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; } 
+try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; }
 catch { return "Unknown Device"; }
 }
 
@@ -545,10 +542,10 @@ await runTransaction(totalRef,current=>(current||0)+1);
 
 localStorage.setItem("qr_access_granted","true");
 localStorage.setItem("qr_code_value",scanned);
-    
-    // *** إضافة: تعيين الصفحة الافتراضية عند الدخول أول مرة ***
+ 
+  // *** إضافة: تعيين الصفحة الافتراضية عند الدخول أول مرة ***
 sessionStorage.setItem('currentPageId', 'selectionContainer');
-    
+ 
 setTimeout(()=>{
 overlay.style.display="none"; content.style.display="flex";
 // ملاحظة: لن نحتاج لإظهار الصفحة هنا، دالة init ستهتم بذلك
@@ -586,11 +583,12 @@ stopCamera(); overlay.style.display="flex"; content.style.display="none";
 sessionPopup.style.display="flex";
 localStorage.removeItem("qr_access_granted");
 localStorage.removeItem("qr_code_value");
-      
-      // *** إضافة: مسح الحالة عند الخروج ***
+  
+   // *** إضافة: مسح الحالة عند الخروج ***
 sessionStorage.removeItem('currentPageId');
 sessionStorage.removeItem('openAccordionId'); // *** تعديل: مسح حالة الأكورديون ***
-      
+sessionStorage.removeItem('openPdfUrl'); // *** إضافة: مسح الـ PDF عند الخروج ***
+  
 stopHeartbeat();
 updateSessionOffline();
 }
@@ -603,12 +601,12 @@ popupBtn.onclick=()=> location.reload();
 /* === (init) الدالة المُعدلة === */
 (async()=>{
 // 1. عرض شاشة التحميل
-loader.style.display = "flex"; 
+loader.style.display = "flex";
 
 // 2. جلب بصمة الجهاز وبدء مراقبة الأكواد
-const deviceId = await getDeviceFingerprint(); 
+const deviceId = await getDeviceFingerprint();
 deviceIdGlobal = deviceId;
-startAllowedCodesWatcher(); 
+startAllowedCodesWatcher();
 
 // 3. التحقق من وجود جلسة سابقة صالحة
 const savedCode = localStorage.getItem("qr_code_value");
@@ -628,49 +626,56 @@ sessionIsValid = false; // أي خطأ يعني جلسة غير صالحة
 }
 
 // 4. إخفاء شاشة التحميل واتخاذ القرار
-loader.style.display = "none"; 
+loader.style.display = "none";
 
 if (sessionIsValid) {
 // 5. الجلسة صالحة: عرض المحتوى
 overlay.style.display = "none";
 content.style.display = "flex";
 
-    // *** إضافة: استعادة الحالة عند التحديث ***
+  // *** إضافة: استعادة الحالة عند التحديث ***
 const savedPageId = sessionStorage.getItem('currentPageId');
 if (savedPageId && savedPageId !== 'selectionContainer') {
 goToPage(savedPageId); // الدالة goToPage ستهتم بالإخفاء والإظهار
-      
-      // *** إضافة جديدة: استعادة الأكورديون المفتوح ***
-      if (savedPageId === 'contentS1') {
-          const openAccordionId = sessionStorage.getItem('openAccordionId');
-          if (openAccordionId) {
-              try {
-                  const pdfList = document.getElementById(openAccordionId);
-                  const titleIcon = document.querySelector(`[onclick="togglePdfList('${openAccordionId}')"] span`);
-                  if (pdfList) {
-                      pdfList.style.display = "grid";
-                  }
-                  if (titleIcon) {
-                      titleIcon.textContent = "▲";
-                  }
-              } catch (e) {
-                  console.warn("Failed to restore accordion:", e);
-                  sessionStorage.removeItem('openAccordionId'); // مسح الحالة الخاطئة
-              }
-          }
-      }
-      // *** نهاية الإضافة الجديدة ***
+  
+   // *** إضافة جديدة: استعادة الأكورديون المفتوح ***
+   if (savedPageId === 'contentS1') {
+     const openAccordionId = sessionStorage.getItem('openAccordionId');
+     if (openAccordionId) {
+       try {
+         const pdfList = document.getElementById(openAccordionId);
+         const titleIcon = document.querySelector(`[onclick="togglePdfList('${openAccordionId}')"] span`);
+         if (pdfList) {
+           pdfList.style.display = "grid";
+         }
+         if (titleIcon) {
+           titleIcon.textContent = "▲";
+         }
+       } catch (e) {
+         console.warn("Failed to restore accordion:", e);
+         sessionStorage.removeItem('openAccordionId'); // مسح الحالة الخاطئة
+       }
+     }
+   }
+   // *** نهاية الإضافة الجديدة ***
 
 } else {
-      // إذا كانت 'selectionContainer' أو null، أظهر شاشة الاختيار
-      returnToSelection(); 
+   // إذا كانت 'selectionContainer' أو null، أظهر شاشة الاختيار
+   returnToSelection();
 }
 // *** نهاية الإضافة ***
-    
+
+// *** إضافة: استعادة الـ PDF المفتوح عند التحديث ***
+const openPdfUrl = sessionStorage.getItem('openPdfUrl');
+if (openPdfUrl) {
+  openPDF(openPdfUrl);
+}
+// *** نهاية الإضافة ***
+ 
 startRealtimeSessionWatcher(); // بدء مراقبة الجلسة (للخروج)
 // التأكد من أننا أونلاين فقط إذا كانت الصفحة مرئية
 if (!document.hidden) {
-startHeartbeat(deviceId); 
+startHeartbeat(deviceId);
 updateSessionOnline(); // تسجيل أننا أونلاين عند التحميل
 } else {
 updateSessionOffline(); // تسجيل أننا أوفلاين إذا تم تحميل الصفحة في الخلفية
@@ -679,10 +684,11 @@ updateSessionOffline(); // تسجيل أننا أوفلاين إذا تم تحم
 // 6. الجلسة غير صالحة: مسح البيانات القديمة وعرض شاشة QR
 localStorage.removeItem("qr_access_granted");
 localStorage.removeItem("qr_code_value");
-    
-    // *** إضافة: مسح الحالة عند التحقق الفاشل ***
+ 
+  // *** إضافة: مسح الحالة عند التحقق الفاشل ***
 sessionStorage.removeItem('currentPageId');
 sessionStorage.removeItem('openAccordionId'); // *** تعديل: مسح حالة الأكورديON ***
+sessionStorage.removeItem('openPdfUrl'); // *** إضافة: مسح الـ PDF ***
 
 overlay.classList.add("show");
 startCamera();
@@ -695,15 +701,15 @@ window.goToPage=function(pageId){
 document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
 document.getElementById('selectionContainer').style.display='none';
 document.getElementById(pageId).style.display='block';
-  
-  // *** إضافة: حفظ الحالة ***
+
+ // *** إضافة: حفظ الحالة ***
 sessionStorage.setItem('currentPageId', pageId);
 };
 window.returnToSelection=function(){
 document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
 document.getElementById('selectionContainer').style.display='block';
-  
-  // *** إضافة: حفظ الحالة ***
+
+ // *** إضافة: حفظ الحالة ***
 sessionStorage.setItem('currentPageId', 'selectionContainer');
 sessionStorage.removeItem('openAccordionId'); // *** تعديل: مسح حالة الأكورديون ***
 };
@@ -757,7 +763,7 @@ const sessionRef = ref(db, `sessions/${deviceId}`);
 // التحقق من وجود الجلسة قبل محاولة التحديث
 const snap = await get(sessionRef);
 if (snap.exists()) {
- await update(sessionRef, {online:false, lastSeen:Date.now(), exitAt:Date.now()});
+await update(sessionRef, {online:false, lastSeen:Date.now(), exitAt:Date.now()});
 }
 }
 } catch(err){ console.warn(err);}
@@ -777,9 +783,14 @@ try{
 const deviceId = deviceIdGlobal || await getDeviceFingerprint();
 if(!deviceId) return;
 
+
+
+
+
+
 // إعادة فحص سريع للجلسة قبل إعلان "online"
 const savedCode = localStorage.getItem("qr_code_value");
-if (!savedCode) return; 
+if (!savedCode) return;
 
 const codeSnap = await get(ref(db, "codes/" + savedCode));
 
@@ -801,8 +812,8 @@ stopHeartbeat();
 
 /* معالجة تغيير ظهور الصفحة (جديد) */
 function handleVisibilityChange() {
-  // لا تفعل شيئاً إذا لم يكن المستخدم قد سجل دخوله أصلاً
-if (!localStorage.getItem("qr_code_value")) return; 
+ // لا تفعل شيئاً إذا لم يكن المستخدم قد سجل دخوله أصلاً
+if (!localStorage.getItem("qr_code_value")) return;
 
 if (document.hidden) {
 // الصفحة مخفية - المستخدم أوفلاين
@@ -818,9 +829,18 @@ updateSessionOnline();
 // هذا هو المستمع الرئيسي لتبديل التبويبات والتطبيقات
 document.addEventListener("visibilitychange", handleVisibilityChange, false);
 
+
+
+
+
+
+
 // ==========================================================
 // === نهاية الكود المضاف لتتبع الحالة (Online/Offline) ===
 // ==========================================================
+
+
+
 
 
 /* تحقق من كلمة المرور اليدوية */
@@ -828,13 +848,19 @@ manualCodeBtn.onclick = async ()=>{ const code = manualCodeInput.value.trim(); i
 
 /* PDF */
 // --- يجب تعريف هذه الدوال في النطاق العام (window) ---
+
+// === تعديل: تمت إضافة حفظ الحالة ===
 window.openPDF=function(url){
 pdfFrame.src=url;
 pdfContainer.style.display='flex';
+sessionStorage.setItem('openPdfUrl', url); // *** تمت الإضافة ***
 }
+
+// === تعديل: تمت إضافة إزالة الحالة ===
 window.closePDF=function(){
 pdfContainer.style.display='none';
 pdfFrame.src='';
+sessionStorage.removeItem('openPdfUrl'); // *** تمت الإضافة ***
 }
 
 
@@ -844,7 +870,7 @@ event.preventDefault();
 });
 
 document.addEventListener('keydown', function(event) {
-if (event.key === 'F12' || 
+if (event.key === 'F12' ||
 (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
 (event.ctrlKey && event.key === 'U')) {
 event.preventDefault();

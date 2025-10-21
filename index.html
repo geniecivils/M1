@@ -1,92 +1,61 @@
 <!DOCTYPE html>
 <html lang="fr" >
 <head>
-<meta charset="UTF-K" />
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>M1 GC</title>
 <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="https://png.pngtree.com/png-vector/20241030/ourmid/pngtree-yellow-hard-hat-vector-png-image_14185637.png">
 <style>
+/* Reset & base */
+html, body { height: 100vh; }
 * {margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;font-family:"Dela Gothic One",sans-serif;}
-/* === أنماط شريط التمرير من الديزاين المستهدف === */
-::-webkit-scrollbar {
-width: 10px;
-}
-::-webkit-scrollbar-track {
-background-color: transparent;
-border-radius: 10px;
-}
-::-webkit-scrollbar-thumb {
-background-color: #2c2c2c;
-border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-background-color: #333;
-cursor: pointer;
-}
+/* scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background-color: transparent; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background-color: #2c2c2c; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background-color: #333; cursor: pointer; }
 
-#fileInput{display: flex; width: 20%;}
-h4{color: #333; font-size: 1.5em; text-align: center;}
+#fileInput{ display: flex; width: 20%; }
+h4{ color: #333; font-size: 1.5em; text-align: center; }
 h3{text-align: center;}
 
-body{  display: flex;
-   justify-content: center;
-   align-items: center;
-   background-color: #121212;
-   color: #f1f1f1;
-   height: 100%;
-   padding: 10px;
-   margin-top: 10px;}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #121212;
+  color: #f1f1f1;
+  padding: 10px;
+  margin-top: 10px;
+  min-height: 100vh;
+}
+
+/* loader & overlays */
 #loader{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;}
 .spinner{border:6px solid #333;border-top:6px solid #007acc;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
 #loader p{margin-top:15px;font-size:1.1em;color:#007acc;}
-#overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity .5s ease;}
-#overlay.show{opacity:1;}
+#overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity .5s ease;pointer-events:none;}
+#overlay.show{opacity:1;pointer-events:auto;}
 video{width:300px;height:220px;border-radius:10px;border:2px solid #007acc;background:#000;object-fit:cover}
 #message{margin-top:10px;font-size:1.1em;text-align:center;}
-.container{  display: none;
-   justify-content: center;
-   align-items: center;
-   flex-direction: column;
-   width: 100%;
-   max-width: 600px;
-   margin: auto;}
+
+/* containers */
+.container{ display: none; justify-content: center; align-items: center; flex-direction: column; width: 100%; max-width: 900px; margin: auto;}
 .selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.5);width:100%;}
 .selection-container h2,.content-container h2{text-align:center;padding-bottom:10px;}
 .contents{display:flex;justify-content:center;flex-wrap:wrap;flex-direction: row-reverse;}
-.btn{text-decoration:none;display:inline-block;margin:10px;padding:10px 15px;background-color:#1e90ff;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:1em;cursor:pointer; border: none;} /* تمت إضافة border:none */
+.btn{text-decoration:none;display:inline-block;margin:10px;padding:10px 15px;background-color:#1e90ff;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:1em;cursor:pointer; border: none;}
 .btn:hover{background-color:#007acc;}
 
-/* === ستايل زر التحديث المضاف === */
-.button-row {
-  display: flex;
-  gap: 10px;
-  justify-content: center; /* سيبدأ من اليمين بسبب dir="rtl" */
-  width: 100%;
-  /* margin-bottom: 10px; لإضافة مسافة تحت الأزرار */
-  /* flex-direction: row-reverse; */
-}
-.btn-refresh {
-  background-color: #28a745; /* لون أخضر */
-}
-.btn-refresh:hover {
-  background-color: #218838; /* أخضر أغمق عند المرور */
-}
+/* refresh row */
+.button-row { display: flex; gap: 10px; justify-content: center; width: 100%; }
+.btn-refresh { background-color: #28a745; }
+.btn-refresh:hover { background-color: #218838; }
 
-/* === نمط البانر من الديزاين المستهدف === */
-.myword1{
-background:#79ff5f;
-padding:10px 50px;
-border:1px solid #333;
-border-radius:10px;
-font-weight:bold;
-font-size:larger;
-font-family:"IBM Plex Sans Arabic",sans-serif;
-margin: 10px 0; /* تمت إضافة هامش */
-width: 100%; /* ليمتد بالعرض */
-border-bottom: 1px solid #333;
-}
+/* banner */
+.myword1{ background:#79ff5f; padding:10px 50px; border:1px solid #333; border-radius:10px; font-weight:bold; font-size:larger; font-family:"IBM Plex Sans Arabic",sans-serif; margin: 10px 0; width: 100%; border-bottom: 1px solid #333; }
 .myword1:hover{background:#86fd6f;}
 
 .stats {margin-top:12px;text-align:center;font-size:0.95em;color:#cbd5e1;}
@@ -94,134 +63,54 @@ border-bottom: 1px solid #333;
 #manualCodeInput{padding:8px 10px;border-radius:8px;border:none;font-size:1em; width:100%; }
 #manualCodeBtn{padding:8px 15px;border:none;border-radius:8px;background:#1e90ff;color:#fff;cursor:pointer; width: 50%;}
 #manualCodeBtn:hover{background:#007acc;}
-#sessionPopup{
-position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:2000;
-}
-#sessionPopupContent{
-background:#1e1e1e;padding:25px 35px;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,0.6);
-text-align:center;color:#fff;font-size:1.3em;font-family:'IBM Plex Sans Arabic',sans-serif;border:2px solid #e74c3c;
-}
-#sessionPopupContent button{
-background:#e74c3c;color:white;border:none;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:1em;margin-top:15px;
-}
+
+/* popup */
+#sessionPopup{ position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:2000; }
+#sessionPopupContent{ background:#1e1e1e;padding:25px 35px;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,0.6);text-align:center;color:#fff;font-size:1.3em;font-family:'IBM Plex Sans Arabic',sans-serif;border:2px solid #e74c3c; }
+#sessionPopupContent button{ background:#e74c3c;color:white;border:none;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:1em;margin-top:15px; }
 #sessionPopupContent button:hover{background:#c0392b;}
 
-/* === CSS S2 (الأصلي) === */
-.materials{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;margin-top:15px;
-/* === إضافة تصميم .model === */
-margin: 10px 0;
-border: 1px solid #333;
-border-radius: 10px;
-padding: 10px;
-}
-/* === تعديل .material-btn ليبدو مثل .pdf-list a === */
-.material-btn{
-width: 100px; /* تعديل */
-height: 100px; /* تعديل */
-background: #2c2c2c; /* تعديل */
-color: #fff;
-font-weight: normal; /* تعديل */
-border-radius: 10px;
-display: flex;
-justify-content: center;
-align-items: center;
-text-align: center;
-cursor: pointer;
-font-size: 1em; /* تعديل */
-padding: 10px; /* إضافة */
-border: 2px solid #2c2c2c; /* إضافة */
-}
-.material-btn:hover{
-background:#1e1e1e; /* تعديل */
-}
+/* materials / grid */
+.materials{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;margin-top:15px;margin: 10px 0;border: 1px solid #333;border-radius: 10px;padding: 10px;}
+.material-btn{width: 100px;height: 100px;background: #2c2c2c;color: #fff;border-radius: 10px;display: flex;justify-content: center;align-items: center;text-align: center;cursor: pointer;font-size: 1em;padding: 10px;border: 2px solid #2c2c2c;}
+.material-btn:hover{background:#1e1e1e;}
 
-/* === CSS (الأصلي) === */
+/* pdf container overlay */
 .pdf-container{position:fixed;inset:0;background:#000d;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:3000;padding:10px;}
 .pdf-container iframe{width:100%;height:90%;border:none;border-radius:10px;}
-.pdf-close-btn {
-position: fixed;
-top: 10px;
-right: 10px;
-background: rgba(0, 0, 0, 0.7);
-color: #fff;
-border: none;
-padding: 40px 15px;
-border-radius: 8px;
-cursor: pointer;
-z-index: 4000;
-pointer-events: auto;
-}
-.pdf-close-btn:hover{background:rgba(0, 0, 0, 0.7);}
+.pdf-close-btn { position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: #fff; border: none; padding: 40px 15px; border-radius: 8px; cursor: pointer; z-index: 4000; pointer-events: auto; }
 
-/* === CSS S1 (الأصلي) مع تعديلات التصميم === */
-
-/* === تعديل .subject-section ليبدو مثل .model === */
-.subject-section {
-margin: 10px 0;
-border: 1px solid #333;
-border-radius: 10px;
-background-color: #1e1e1e;
-width: 100%;
-}
-/* === تعديل h3 ليبدو مثل .model-title === */
+/* subject / accordion */
+.subject-section { margin: 10px 0; border: 1px solid #333; border-radius: 10px; background-color: #1e1e1e; width: 100%; overflow:hidden; }
 .subject-section h3 {
-/* text-align: right; تعديل لـ RTL */
-color: #ffffff;
-margin-bottom: 0;
-/* font-family: "IBM Plex Sans Arabic", sans-serif; */
-background-color: #2c2c2c;
-padding: 10px;
-border-bottom: 1px solid #333;
-/* font-size: 1em; */
-border-radius: 10px 10px 0 0;
-/* flex-direction: row-reverse; */
-
-/* === إضافات لجعله قابلاً للنقر === */
-cursor: pointer;
-display: flex;
-justify-content: space-between;
-align-items: center;
-font-size: 1em;
+  color: #ffffff; margin-bottom: 0; background-color: #2c2c2c; padding: 10px; border-bottom: 1px solid #333; border-radius: 10px 10px 0 0; cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size:1em;
 }
-/* === إضافة حالة H:OVER === */
-.subject-section h3:hover {
-background-color: #333;
-}
+.subject-section h3:hover { background-color: #333; }
+.subject-section h3 span.icon { margin-inline-start: 10px; font-weight: bold; }
 
-/* === تعديل .pdf-grid ليبدو مثل .con === */
+/* grid: use responsive minmax */
 .pdf-grid {
-display: grid;
-grid-template-columns: repeat(3, 1fr); /* تعديل */
-gap: 10px;
-justify-content: center;
-justify-items: center;
-padding: 10px; /* إضافة */
-direction: ltr; /* === هذا هو التعديل لعكس الترتيب === */
+  display: none;
+  grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
+  gap: 10px;
+  justify-content: center;
+  justify-items: center;
+  padding: 10px;
+  direction: ltr;
 }
-/* === تعديل .pdf-box ليبدو مثل .pdf-list a === */
-.pdf-box {
-width: 90px; /* تعديل */
-/* height: 100px; تعديل */
-background: #2c2c2c; /* تعديل */
-color: #f1f1f1;
-border: 2px solid #2c2c2c; /* تعديل */
-border-radius: 10px; /* تعديل */
-display: flex;
-justify-content: center;
-align-items: center;
-text-align: center;
-cursor: pointer;
-font-size: 1em; /* تعديل */
-font-weight: normal; /* تعديل */
-transition: background-color 0.3s;
-padding: 10px 5px; /* إضافة */
-}
-.pdf-box:hover {
-background-color: #1e1e1e; /* تعديل */
-color: #f1f1f1; /* تعديل */
-}
-/* === نهاية CSS S1 === */
+.pdf-grid.open { display: grid; }
 
+/* small card */
+.pdf-box { width: 90px; background: #2c2c2c; color: #f1f1f1; border: 2px solid #2c2c2c; border-radius: 10px; display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; font-size:1em; padding:10px 5px; }
+.pdf-box:hover { background-color:#1e1e1e; color:#f1f1f1; }
+
+/* accessibility focus */
+.subject-section h3:focus { outline: 3px solid rgba(0,122,204,0.5); outline-offset: 2px; }
+
+@media (max-width:600px){
+  video{width:240px;height:170px;}
+  #manualCodeContainer{width:90%;}
+}
 </style>
 </head>
 <body>
@@ -229,8 +118,9 @@ color: #f1f1f1; /* تعديل */
  <div class="spinner"></div>
  <p>Vérification de la connexion...</p>
 </div>
-<div id="overlay">
- <video id="video" autoplay></video>
+
+<div id="overlay" role="dialog" aria-modal="true">
+ <video id="video" autoplay playsinline></video>
  <div id="message">Veuillez scanner le code QR ou saisir le code pour entrer...</div>
  <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
  <div id="manualCodeContainer">
@@ -238,6 +128,7 @@ color: #f1f1f1; /* تعديل */
   <button id="manualCodeBtn">vérification</button>
  </div>
 </div>
+
 <div id="sessionPopup">
  <div id="sessionPopupContent">
   SESSION TERMINEE 🔒
@@ -245,21 +136,19 @@ color: #f1f1f1; /* تعديل */
   <button id="popupBtn">OK</button>
  </div>
 </div>
-<div class="container" id="content">
+
+<div class="container" id="content" aria-live="polite">
  <div class="selection-container" id="selectionContainer">
   <h2>🇵🇸</h2>
-    <h3> 👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️ </h3>
-      <h2></h2>
+  <h3> 👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️ </h3>
   <h2>Choisissez le semestre</h2>
- 
   <div class="contents">
    <a href="#" class="btn" onclick="goToPage('contentS2')">S2</a>
    <a href="#" class="btn" onclick="goToPage('contentS1')">S1</a>
-   </div>
-
-        <h4>X</h4>
-
+  </div>
+  <h4>X</h4>
  </div>
+
  <div class="content-container" id="contentS1" style="display:none;">
   <h2>🇵🇸</h2>
   <h2>Semestre 1</h2>
@@ -267,97 +156,39 @@ color: #f1f1f1; /* تعديل */
     <button class="btn" onclick="returnToSelection()">RETOUR</button>
     <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
   </div>
-   
-  <button class="myword1">
-   سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
-  </button>
- 
-  <div class="subject-section">
-   <h3 onclick="togglePdfList('mds-grid')">MDS<span>▼</span></h3>
-   <div class="pdf-grid" id="mds-grid" style="display: none;">
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
 
-   </div>
-  </div>
-  <div class="subject-section">
-   <h3 onclick="togglePdfList('dds-grid')">DDS<span>▼</span></h3>
-   <div class="pdf-grid" id="dds-grid" style="display: none;">
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>   
-
-
-   </div>
-  </div>
-
+  <button class="myword1">سبحان الله و الحمد لله و لا اله الا الله و الله أكبر</button>
 
   <div class="subject-section">
-   <h3 onclick="togglePdfList('beton-grid')">BETON<span>▼</span></h3>
-   <div class="pdf-grid" id="beton-grid" style="display: none;">
-
-  
+   <h3 onclick="togglePdfList('mds-grid')" data-acc-id="mds-grid" aria-controls="mds-grid" aria-expanded="false">MDS <span class="icon">▼</span></h3>
+   <div class="pdf-grid" id="mds-grid" aria-hidden="true">
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>
    </div>
   </div>
 
-    <div class="subject-section">
-   <h3 onclick="togglePdfList('charpente-grid')">CHARPANTE<span>▼</span></h3>
-   <div class="pdf-grid" id="charpente-grid" style="display: none;">
-
-   
+  <div class="subject-section">
+   <h3 onclick="togglePdfList('dds-grid')" data-acc-id="dds-grid" aria-controls="dds-grid" aria-expanded="false">DDS <span class="icon">▼</span></h3>
+   <div class="pdf-grid" id="dds-grid" aria-hidden="true">
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>
+    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>
    </div>
   </div>
 
-
-
-        <div class="subject-section">
-   <h3 onclick="togglePdfList('thermique-grid')">THERMIQUE<span>▼</span></h3>
-   <div class="pdf-grid" id="thermique-grid" style="display: none;">
-  
-
-   </div>
+  <div class="subject-section">
+   <h3 onclick="togglePdfList('beton-grid')" data-acc-id="beton-grid" aria-controls="beton-grid" aria-expanded="false">BETON <span class="icon">▼</span></h3>
+   <div class="pdf-grid" id="beton-grid" aria-hidden="true"></div>
   </div>
 
-
-           <div class="subject-section">
-   <h3 onclick="togglePdfList('python-grid')">PYTHON<span>▼</span></h3>
-   <div class="pdf-grid" id="python-grid" style="display: none;">
-  
-   </div>
-  </div>
- 
-
-           <div class="subject-section">
-   <h3 onclick="togglePdfList('innovants-grid')">METHODE INNOV<span>▼</span></h3>
-   <div class="pdf-grid" id="innovants-grid" style="display: none;">
-  
-   </div>
+  <div class="subject-section">
+   <h3 onclick="togglePdfList('charpente-grid')" data-acc-id="charpente-grid" aria-controls="charpente-grid" aria-expanded="false">CHARPENTE <span class="icon">▼</span></h3>
+   <div class="pdf-grid" id="charpente-grid" aria-hidden="true"></div>
   </div>
 
-
-              <div class="subject-section">
-   <h3 onclick="togglePdfList('exprimentale-grid')">METHODE EXPRI<span>▼</span></h3>
-   <div class="pdf-grid" id="exprimentale-grid" style="display: none;">
-  
-
-   </div>
-  </div>
-
-           <div class="subject-section">
-   <h3 onclick="togglePdfList('batiment-grid')">BATIMENT<span>▼</span></h3>
-   <div class="pdf-grid" id="batiment-grid" style="display: none;">
-
-  
-   </div>
-  </div>
-
-
-           <h4>X</h4>
+  <h4>X</h4>
  </div>
+
  <div class="content-container" id="contentS2" style="display:none;">
   <h2>🇵🇸</h2>
   <h2>Semestre 2</h2>
@@ -365,41 +196,40 @@ color: #f1f1f1; /* تعديل */
     <button class="btn" onclick="returnToSelection()">RETOUR</button>
     <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
   </div>
-   
-  <button class="myword1">
-   سبحان الله و الحمد لله و لا اله الا الله و الله أكبر
-  </button>
 
-  <div class="materials">
+  <button class="myword1">سبحان الله و الحمد لله و لا اله الا الله و الله أكبر</button>
 
-  </div>
+  <div class="materials"></div>
  </div>
 </div>
-<div class="pdf-container" id="pdfContainer">
+
+<div class="pdf-container" id="pdfContainer" aria-hidden="true">
  <button class="pdf-close-btn" onclick="closePDF()">RETOUR</button>
- <iframe id="pdfFrame" src=""></iframe>
+ <iframe id="pdfFrame" src="" title="PDF viewer"></iframe>
 </div>
+
 <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 <script type="module">
+// Firebase imports (unchanged)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get, set, onValue, onDisconnect, update, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, get, set, onValue, onDisconnect, update, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
-authDomain: "my-id-19724.firebaseapp.com",
-databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
-projectId: "my-id-19724",
-storageBucket: "my-id-19724.appspot.com",
-messagingSenderId: "788057820357",
-appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
-measurementId: "G-5QX27XCFK6"
+  apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
+  authDomain: "my-id-19724.firebaseapp.com",
+  databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
+  projectId: "my-id-19724",
+  storageBucket: "my-id-19724.appspot.com",
+  messagingSenderId: "788057820357",
+  appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
+  measurementId: "G-5QX27XCFK6"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* عناصر الواجهة */
+/* UI elements */
 const video = document.getElementById('video');
 const overlay = document.getElementById('overlay');
 const loader = document.getElementById('loader');
@@ -423,463 +253,503 @@ let allowedCodesSet = new Set();
 
 /* Fingerprint */
 async function getDeviceFingerprint() {
-if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
-const fp = await FingerprintJS.load();
-const result = await fp.get();
-const deviceId = result.visitorId;
-localStorage.setItem("deviceId", deviceId);
-return deviceId;
+  if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
+  const fp = await FingerprintJS.load();
+  const result = await fp.get();
+  const deviceId = result.visitorId;
+  localStorage.setItem("deviceId", deviceId);
+  return deviceId;
 }
 
 function getDeviceName() {
-try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; }
-catch { return "Unknown Device"; }
+  try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; }
+  catch { return "Unknown Device"; }
 }
 
 function getLocation() {
-return new Promise((resolve) => {
-if (!("geolocation" in navigator)) return resolve(null);
-navigator.geolocation.getCurrentPosition(
-(pos) => resolve({lat: pos.coords.latitude,lng: pos.coords.longitude,accuracy: pos.coords.accuracy}),
-() => resolve(null),
-{ enableHighAccuracy: true, timeout: 8000 }
-);
-});
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({lat: pos.coords.latitude,lng: pos.coords.longitude,accuracy: pos.coords.accuracy}),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
 }
 
-/* كاميرا */
+/* camera */
 async function startCamera() {
-try {
-const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-video.srcObject = stream;
-streamRef = stream;
-scanning = true;
-scanLoop();
-} catch (err) {
-message.textContent = "L'appareil photo n'a pas pu démarrer !";
-console.error(err);
-}
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = stream;
+    streamRef = stream;
+    scanning = true;
+    scanLoop();
+  } catch (err) {
+    message.textContent = "L'appareil photo n'a pas pu démarrer !";
+    console.error(err);
+  }
 }
 function stopCamera() { scanning=false; if(streamRef) streamRef.getTracks().forEach(t=>t.stop()); video.srcObject=null; streamRef=null; }
 
-/* مسح QR */
+/* scan loop */
 async function scanLoop() {
-if (!scanning) return;
-if (video.readyState === video.HAVE_ENOUGH_DATA) {
-canvas.width = video.videoWidth;
-canvas.height = video.videoHeight;
-ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-const code = jsQR(imageData.data, canvas.width, canvas.height);
-if (code) await handleScannedCode(code.data.trim());
-}
-requestAnimationFrame(scanLoop);
+  if (!scanning) return;
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    if (code) await handleScannedCode(code.data.trim());
+  }
+  requestAnimationFrame(scanLoop);
 }
 
-/* تحليل QR من صورة مرفوعة */
+/* handle image file QR */
 fileInput.addEventListener("change", async (e)=>{
-const file = e.target.files[0];
-if(!file) return;
-const img = new Image();
-img.onload = async ()=>{
-canvas.width=img.width; canvas.height=img.height;
-ctx.drawImage(img,0,0);
-const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-const code = jsQR(imageData.data, canvas.width, canvas.height);
-if(code) await handleScannedCode(code.data.trim());
-else message.textContent="Aucun code QR trouvé!";
-};
-img.src = URL.createObjectURL(file);
+  const file = e.target.files[0];
+  if(!file) return;
+  const img = new Image();
+  img.onload = async ()=>{
+    canvas.width=img.width; canvas.height=img.height;
+    ctx.drawImage(img,0,0);
+    const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    if(code) await handleScannedCode(code.data.trim());
+    else message.textContent="Aucun code QR trouvé!";
+  };
+  img.src = URL.createObjectURL(file);
 });
 
-/* load allowed codes */
+/* allowed codes watcher */
 function startAllowedCodesWatcher() {
-onValue(ref(db,'allowedCodes'), snap => {
-const val = snap.val()||{};
-allowedCodesSet = new Set(Object.keys(val));
-});
+  onValue(ref(db,'allowedCodes'), snap => {
+    const val = snap.val()||{};
+    allowedCodesSet = new Set(Object.keys(val));
+  });
 }
 
-/* handle code (QR أو password) */
+/* handle scanned or manual code */
 async function handleScannedCode(scanned) {
-if (!allowedCodesSet.has(scanned)) { message.textContent = "Code invalide ❌"; return; }
-const codeRef = ref(db, "codes/" + scanned);
-const snapshot = await get(codeRef);
-const deviceId = await getDeviceFingerprint();
-deviceIdGlobal = deviceId;
+  if (!allowedCodesSet.has(scanned)) { message.textContent = "Code invalide ❌"; return; }
+  const codeRef = ref(db, "codes/" + scanned);
+  const snapshot = await get(codeRef);
+  const deviceId = await getDeviceFingerprint();
+  deviceIdGlobal = deviceId;
 
-if (!snapshot.exists() || snapshot.val().usedBy === deviceId) {
-if(!snapshot.exists()) await set(codeRef,{used:true,usedBy:deviceId,lastUsedAt:Date.now()});
-await grantAccess(scanned);
-} else {
-message.textContent = "❌ Ce code est utilisé depuis un autre appareil";
+  if (!snapshot.exists() || snapshot.val().usedBy === deviceId) {
+    if(!snapshot.exists()) await set(codeRef,{used:true,usedBy:deviceId,lastUsedAt:serverTimestamp()});
+    await grantAccess(scanned);
+  } else {
+    message.textContent = "❌ Ce code est utilisé depuis un autre appareil";
+  }
 }
+
+/* ---------- Presence helpers (NEW) ---------- */
+/* Ensure onDisconnect and presence monitoring via .info/connected + local handlers */
+
+async function setupPresence(deviceId){
+  try{
+    // مراقبة اتصال الـ socket مع Firebase
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, async snap => {
+      const isConnected = !!snap.val();
+      const sessionRef = ref(db, `sessions/${deviceId}`);
+
+      if (isConnected) {
+        try{
+          // تأكد أننا نعلَن أونلاين ونسجّل onDisconnect على الخادم
+          await update(sessionRef, { online: true, lastHeartbeat: serverTimestamp() });
+
+          // onDisconnect على الخادم — في حال انقطع الاتصال فجأة
+          await onDisconnect(sessionRef).update({
+            online: false,
+            lastSeen: serverTimestamp(),
+            exitAt: serverTimestamp()
+          });
+        }catch(e){
+          console.warn("setupPresence - error setting onDisconnect/update:", e);
+        }
+      } else {
+        // لا حاجة لفعل شيء إضافي — onDisconnect سيعالج حالة الخادم
+      }
+    });
+  } catch(err){
+    console.warn("setupPresence failed:", err);
+  }
+}
+
+function addRobustVisibilityHandlers(deviceId){
+  // visibilitychange : سريع لإرسال أوفلاين وقت الاختفاء
+  document.addEventListener('visibilitychange', () => {
+    if (!localStorage.getItem("qr_code_value")) return;
+    if (document.visibilityState === 'visible') {
+      updateSessionOnline();
+    } else {
+      updateSessionOffline();
+    }
+  });
+
+  // pagehide : يعمل جيداً على الهواتف عند إغلاق التبويب/التطبيق
+  window.addEventListener('pagehide', () => {
+    if (!localStorage.getItem("qr_code_value")) return;
+    updateSessionOffline();
+  }, {passive:true});
+
+  // blur : قد يحدث عند رجوع التطبيق للخلفية (Android WebView / Chrome)
+  window.addEventListener('blur', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+
+  // freeze : Page Lifecycle API (بعض المتصفحات)
+  document.addEventListener('freeze', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+
+  // beforeunload / unload كنسخة احتياطية
+  window.addEventListener('beforeunload', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+  window.addEventListener('unload', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+
+  // Cordova/Capacitor events (إن وُجدت)
+  window.addEventListener('resume', () => { updateSessionOnline(); });
+  window.addEventListener('pause', () => { updateSessionOffline(); });
 }
 
 /* grant access */
 async function grantAccess(scanned) {
-message.textContent="Vérifié avec succès ✅";
-stopCamera();
-const deviceId = await getDeviceFingerprint();
-deviceIdGlobal=deviceId;
-const deviceName=getDeviceName();
-const location=await getLocation();
-const now=Date.now();
-const sessionRef=ref(db,`sessions/${deviceId}`);
-const sessionData={code:scanned,deviceName,location:location||null,enteredAt:now,online:true,lastSeen:null,lastHeartbeat:now,exitAt:null};
+  message.textContent="Vérifié avec succès ✅";
+  stopCamera();
+  const deviceId = await getDeviceFingerprint();
+  deviceIdGlobal=deviceId;
+  const deviceName=getDeviceName();
+  const location=await getLocation();
 
-try {
-const visitorRef=ref(db,`visitors/${deviceId}`);
-const visitorSnap=await get(visitorRef);
-await set(sessionRef,sessionData);
-await onDisconnect(sessionRef).update({online:false,lastSeen:Date.now(),exitAt:Date.now()});
-await update(ref(db,`codes/${scanned}`),{used:true,usedBy:deviceId,lastUsedAt:Date.now()});
-if(!visitorSnap.exists()){
-await set(visitorRef,{firstSeen:Date.now(),deviceName});
-const totalRef=ref(db,`counters/totalVisitors`);
-await runTransaction(totalRef,current=>(current||0)+1);
-} else { await update(visitorRef,{lastSeen:Date.now(),deviceName}); }
+  const sessionRef=ref(db,`sessions/${deviceId}`);
 
-localStorage.setItem("qr_access_granted","true");
-localStorage.setItem("qr_code_value",scanned);
- 
-  // *** إضافة: تعيين الصفحة الافتراضية عند الدخول أول مرة ***
-sessionStorage.setItem('currentPageId', 'selectionContainer');
- 
-setTimeout(()=>{
-overlay.style.display="none"; content.style.display="flex";
-// ملاحظة: لن نحتاج لإظهار الصفحة هنا، دالة init ستهتم بذلك
-startRealtimeSessionWatcher(); startHeartbeat(deviceId);
-},800);
-} catch(err){ console.error("grantAccess error:",err); message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى.";}
+  const sessionData={
+      code:scanned,
+      deviceName,
+      location:location||null,
+      enteredAt:serverTimestamp(),
+      online:true,
+      lastSeen:null,
+      lastHeartbeat:serverTimestamp(),
+      exitAt:null
+  };
+
+  try {
+    const visitorRef=ref(db,`visitors/${deviceId}`);
+    const visitorSnap=await get(visitorRef);
+
+    // write session
+    await set(sessionRef,sessionData);
+
+    // onDisconnect: احتياطي على الخادم في حال انقطع الاتصال فجأة
+    await onDisconnect(sessionRef).update({
+        online:false,
+        lastSeen:serverTimestamp(),
+        exitAt:serverTimestamp()
+    });
+
+    // update code usage
+    await update(ref(db,`codes/${scanned}`),{used:true,usedBy:deviceId,lastUsedAt:serverTimestamp()});
+
+    if(!visitorSnap.exists()){
+        await set(visitorRef,{firstSeen:serverTimestamp(),deviceName});
+        const totalRef=ref(db,`counters/totalVisitors`);
+        await runTransaction(totalRef,current=>(current||0)+1);
+    } else {
+        await update(visitorRef,{lastSeen:serverTimestamp(),deviceName});
+    }
+
+    localStorage.setItem("qr_access_granted","true");
+    localStorage.setItem("qr_code_value",scanned);
+    sessionStorage.setItem('currentPageId', 'selectionContainer');
+
+    // === NEW: إعداد الحضور (onDisconnect + مراقبة .info/connected) و مستمعي الصفحة ===
+    try{
+      setupPresence(deviceId);                // يضمن onDisconnect و update على الخادم
+      addRobustVisibilityHandlers(deviceId);  // يضيف مستمعين محليين لإرسال أوفلاين فوراً
+    }catch(e){ console.warn("Presence setup failed:", e); }
+    // === end NEW ===
+
+    setTimeout(()=>{
+      overlay.classList.remove("show");
+      overlay.style.display = "none";
+      content.style.display="flex";
+      startRealtimeSessionWatcher();
+      startHeartbeat(deviceId);
+    },800);
+  } catch(err){ console.error("grantAccess error:",err); message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى."; }
 }
 
-/* heartbeat كل ثانية */
+/* heartbeat */
 function startHeartbeat(deviceId){
-if(heartbeatIntervalId) clearInterval(heartbeatIntervalId);
-heartbeatIntervalId=setInterval(async()=>{
-try{
-// التأكد من أن الصفحة لا تزال مرئية قبل إرسال النبض
-if (document.hidden) {
-stopHeartbeat();
-updateSessionOffline();
-return;
-}
-await update(ref(db,`sessions/${deviceId}`),{lastHeartbeat:Date.now(),online:true});
-}catch(e){console.warn("Heartbeat failed:",e);}
-},1000); // تم تقليل المدة لثانية واحدة لزيادة الدقة
+  if(heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+  heartbeatIntervalId=setInterval(async()=>{
+    try{
+      if (document.hidden) {
+        stopHeartbeat();
+        updateSessionOffline();
+        return;
+      }
+      await update(ref(db,`sessions/${deviceId}`),{lastHeartbeat:serverTimestamp(),online:true});
+    }catch(e){console.warn("Heartbeat failed:",e);}
+  },1000);
 }
 function stopHeartbeat(){ if(heartbeatIntervalId) clearInterval(heartbeatIntervalId); heartbeatIntervalId=null; }
 
-/* متابعة مستمرة للجلسة */
+/* realtime session watcher */
 async function startRealtimeSessionWatcher(){
-const savedCode=localStorage.getItem("qr_code_value");
-if(!savedCode) return;
-const deviceId = await getDeviceFingerprint();
-const codeRef=ref(db,"codes/"+savedCode);
-onValue(codeRef, snap=>{
-if(!snap.exists() || snap.val().usedBy!==deviceId){
-stopCamera(); overlay.style.display="flex"; content.style.display="none";
-sessionPopup.style.display="flex";
-localStorage.removeItem("qr_access_granted");
-localStorage.removeItem("qr_code_value");
-  
-   // *** إضافة: مسح الحالة عند الخروج ***
-sessionStorage.removeItem('currentPageId');
-sessionStorage.removeItem('openAccordionId'); // *** تعديل: مسح حالة الأكورديون ***
-sessionStorage.removeItem('openPdfUrl'); // *** إضافة: مسح الـ PDF عند الخروج ***
-  
-stopHeartbeat();
-updateSessionOffline();
-}
-});
+  const savedCode=localStorage.getItem("qr_code_value");
+  if(!savedCode) return;
+  const deviceId = await getDeviceFingerprint();
+  const codeRef=ref(db,"codes/"+savedCode);
+  onValue(codeRef, snap=>{
+    if(!snap.exists() || snap.val().usedBy!==deviceId){
+      stopCamera(); overlay.style.display="flex"; overlay.classList.add("show"); content.style.display="none";
+      sessionPopup.style.display="flex";
+      localStorage.removeItem("qr_access_granted");
+      localStorage.removeItem("qr_code_value");
+      sessionStorage.removeItem('currentPageId');
+      sessionStorage.removeItem('openAccordionId');
+      sessionStorage.removeItem('openPdfUrl');
+      stopHeartbeat();
+      updateSessionOffline();
+    }
+  });
 }
 
 /* popup */
 popupBtn.onclick=()=> location.reload();
 
-/* === (init) الدالة المُعدلة === */
+/* init */
 (async()=>{
-// 1. عرض شاشة التحميل
-loader.style.display = "flex";
+  loader.style.display = "flex";
+  const deviceId = await getDeviceFingerprint();
+  deviceIdGlobal = deviceId;
+  startAllowedCodesWatcher();
 
-// 2. جلب بصمة الجهاز وبدء مراقبة الأكواد
-const deviceId = await getDeviceFingerprint();
-deviceIdGlobal = deviceId;
-startAllowedCodesWatcher();
+  const savedCode = localStorage.getItem("qr_code_value");
+  let sessionIsValid = false;
 
-// 3. التحقق من وجود جلسة سابقة صالحة
-const savedCode = localStorage.getItem("qr_code_value");
-let sessionIsValid = false;
+  if (savedCode) {
+    try {
+      const snap = await get(ref(db, "codes/" + savedCode));
+      if (snap.exists() && snap.val().usedBy === deviceId) {
+        sessionIsValid = true;
+      }
+    } catch (e) {
+      console.error("Error checking saved session:", e);
+      sessionIsValid = false;
+    }
+  }
 
-if (savedCode) {
-try {
-// التحقق من الكود المحفوظ في قاعدة البيانات
-const snap = await get(ref(db, "codes/" + savedCode));
-if (snap.exists() && snap.val().usedBy === deviceId) {
-sessionIsValid = true;
-}
-} catch (e) {
-console.error("Error checking saved session:", e);
-sessionIsValid = false; // أي خطأ يعني جلسة غير صالحة
-}
-}
+  loader.style.display = "none";
 
-// 4. إخفاء شاشة التحميل واتخاذ القرار
-loader.style.display = "none";
+  if (sessionIsValid) {
+    overlay.classList.remove("show");
+    overlay.style.display = "none";
+    content.style.display = "flex";
 
-if (sessionIsValid) {
-// 5. الجلسة صالحة: عرض المحتوى
-overlay.style.display = "none";
-content.style.display = "flex";
+    const savedPageId = sessionStorage.getItem('currentPageId');
+    if (savedPageId && savedPageId !== 'selectionContainer') {
+      goToPage(savedPageId);
+      if (savedPageId === 'contentS1') {
+        const openAccordionId = sessionStorage.getItem('openAccordionId');
+        if (openAccordionId) {
+          try {
+            const pdfList = document.getElementById(openAccordionId);
+            const title = document.querySelector(`[data-acc-id="${openAccordionId}"]`);
+            if (pdfList) {
+              pdfList.classList.add('open');
+              pdfList.setAttribute('aria-hidden','false');
+            }
+            if (title) {
+              title.setAttribute('aria-expanded','true');
+              const icon = title.querySelector('span.icon');
+              if (icon) icon.textContent = '▲';
+            }
+          } catch (e) {
+            console.warn("Failed to restore accordion:", e);
+            sessionStorage.removeItem('openAccordionId');
+          }
+        }
+      }
+    } else {
+      returnToSelection();
+    }
 
-  // *** إضافة: استعادة الحالة عند التحديث ***
-const savedPageId = sessionStorage.getItem('currentPageId');
-if (savedPageId && savedPageId !== 'selectionContainer') {
-goToPage(savedPageId); // الدالة goToPage ستهتم بالإخفاء والإظهار
-  
-   // *** إضافة جديدة: استعادة الأكورديون المفتوح ***
-   if (savedPageId === 'contentS1') {
-     const openAccordionId = sessionStorage.getItem('openAccordionId');
-     if (openAccordionId) {
-       try {
-         const pdfList = document.getElementById(openAccordionId);
-         const titleIcon = document.querySelector(`[onclick="togglePdfList('${openAccordionId}')"] span`);
-         if (pdfList) {
-           pdfList.style.display = "grid";
-         }
-         if (titleIcon) {
-           titleIcon.textContent = "▲";
-         }
-       } catch (e) {
-         console.warn("Failed to restore accordion:", e);
-         sessionStorage.removeItem('openAccordionId'); // مسح الحالة الخاطئة
-       }
-     }
-   }
-   // *** نهاية الإضافة الجديدة ***
+    const openPdfUrl = sessionStorage.getItem('openPdfUrl');
+    if (openPdfUrl) openPDF(openPdfUrl);
 
-} else {
-   // إذا كانت 'selectionContainer' أو null، أظهر شاشة الاختيار
-   returnToSelection();
-}
-// *** نهاية الإضافة ***
+    // Ensure presence watchers are active after reload
+    try{
+      setupPresence(deviceId);
+      addRobustVisibilityHandlers(deviceId);
+    }catch(e){ console.warn("Presence re-setup failed:", e); }
 
-// *** إضافة: استعادة الـ PDF المفتوح عند التحديث ***
-const openPdfUrl = sessionStorage.getItem('openPdfUrl');
-if (openPdfUrl) {
-  openPDF(openPdfUrl);
-}
-// *** نهاية الإضافة ***
- 
-startRealtimeSessionWatcher(); // بدء مراقبة الجلسة (للخروج)
-// التأكد من أننا أونلاين فقط إذا كانت الصفحة مرئية
-if (!document.hidden) {
-startHeartbeat(deviceId);
-updateSessionOnline(); // تسجيل أننا أونلاين عند التحميل
-} else {
-updateSessionOffline(); // تسجيل أننا أوفلاين إذا تم تحميل الصفحة في الخلفية
-}
-} else {
-// 6. الجلسة غير صالحة: مسح البيانات القديمة وعرض شاشة QR
-localStorage.removeItem("qr_access_granted");
-localStorage.removeItem("qr_code_value");
- 
-  // *** إضافة: مسح الحالة عند التحقق الفاشل ***
-sessionStorage.removeItem('currentPageId');
-sessionStorage.removeItem('openAccordionId'); // *** تعديل: مسح حالة الأكورديON ***
-sessionStorage.removeItem('openPdfUrl'); // *** إضافة: مسح الـ PDF ***
+    startRealtimeSessionWatcher();
+    if (!document.hidden) {
+      startHeartbeat(deviceId);
+      updateSessionOnline();
+    } else updateSessionOffline();
+  } else {
+    localStorage.removeItem("qr_access_granted");
+    localStorage.removeItem("qr_code_value");
+    sessionStorage.removeItem('currentPageId');
+    sessionStorage.removeItem('openAccordionId');
+    sessionStorage.removeItem('openPdfUrl');
 
-overlay.classList.add("show");
-startCamera();
-}
+    overlay.style.display = "flex";
+    overlay.classList.add("show");
+    startCamera();
+  }
+
+  // accessibility: attach keyboard controls to all accordion headers
+  attachAccordionAccessibility();
 })();
-/* === نهاية دالة init المُعدلة === */
 
 /* navigation */
 window.goToPage=function(pageId){
-document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
-document.getElementById('selectionContainer').style.display='none';
-document.getElementById(pageId).style.display='block';
-
- // *** إضافة: حفظ الحالة ***
-sessionStorage.setItem('currentPageId', pageId);
+  document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
+  document.getElementById('selectionContainer').style.display='none';
+  document.getElementById(pageId).style.display='block';
+  sessionStorage.setItem('currentPageId', pageId);
 };
 window.returnToSelection=function(){
-document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
-document.getElementById('selectionContainer').style.display='block';
-
- // *** إضافة: حفظ الحالة ***
-sessionStorage.setItem('currentPageId', 'selectionContainer');
-sessionStorage.removeItem('openAccordionId'); // *** تعديل: مسح حالة الأكورديون ***
+  document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
+  document.getElementById('selectionContainer').style.display='block';
+  sessionStorage.setItem('currentPageId', 'selectionContainer');
+  sessionStorage.removeItem('openAccordionId');
 };
 
-/* === دالة الأكورديون المضافة (مع تعديل) === */
+/* Accordion toggle (keeps single-open behavior, updates aria & session) */
 window.togglePdfList = function(id) {
-// جلب كل قوائم المواد في S1
-const allPdfLists = document.querySelectorAll('#contentS1 .pdf-grid');
-// جلب كل عناوين المواد في S1
-const allTitles = document.querySelectorAll('#contentS1 .subject-section h3');
+  const allPdfLists = document.querySelectorAll('#contentS1 .pdf-grid');
+  const allTitles = document.querySelectorAll('#contentS1 .subject-section h3');
 
-const pdfList = document.getElementById(id);
-if (!pdfList) return;
+  const pdfList = document.getElementById(id);
+  if (!pdfList) return;
 
-// جلب الأيقونة الخاصة بالعنوان المضغوط
-const titleIcon = document.querySelector(`[onclick="togglePdfList('${id}')"] span`);
+  const title = document.querySelector(`[data-acc-id="${id}"]`);
+  const icon = title ? title.querySelector('span.icon') : null;
 
-// التحقق إذا كنا سنقوم بالفتح (لأنه مغلق حاليًا)
-const isOpening = (pdfList.style.display === "none" || pdfList.style.display === "");
+  const isOpening = !pdfList.classList.contains('open');
 
-// 1. إغلاق جميع القوائم
-allPdfLists.forEach(list => {
-list.style.display = "none";
-});
+  // close all
+  allPdfLists.forEach(list => {
+    list.classList.remove('open');
+    list.setAttribute('aria-hidden','true');
+  });
+  allTitles.forEach(t => {
+    t.setAttribute('aria-expanded','false');
+    const s = t.querySelector('span.icon');
+    if (s) s.textContent = "▼";
+  });
 
-// 2. إعادة تعيين جميع الأيقونات إلى "▼"
-allTitles.forEach(title => {
-const span = title.querySelector('span');
-if (span) span.textContent = "▼";
-});
+  if (isOpening) {
+    pdfList.classList.add('open');
+    pdfList.setAttribute('aria-hidden','false');
+    if (icon) icon.textContent = "▲";
+    if (title) title.setAttribute('aria-expanded','true');
+    sessionStorage.setItem('openAccordionId', id);
+  } else {
+    sessionStorage.removeItem('openAccordionId');
+  }
+};
 
-// 3. فتح القائمة المستهدفة فقط إذا كانت مغلقة
-if (isOpening) {
-pdfList.style.display = "grid";
-if (titleIcon) titleIcon.textContent = "▲";
-sessionStorage.setItem('openAccordionId', id); // *** تعديل: حفظ الحالة ***
-} else {
-// إذا كانت مفتوحة، فإن الخطوة 1 و 2 أغلقتها، لذا نزيل الحالة
-sessionStorage.removeItem('openAccordionId'); // *** تعديل: إزالة الحالة ***
+/* attach keyboard accessibility to accordion headers */
+function attachAccordionAccessibility(){
+  const headers = document.querySelectorAll('#contentS1 .subject-section h3');
+  headers.forEach(h => {
+    h.setAttribute('role','button');
+    if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex','0');
+    if (!h.hasAttribute('aria-expanded')) h.setAttribute('aria-expanded','false');
+
+    // keyboard: Enter or Space toggles
+    h.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+        ev.preventDefault();
+        const id = h.getAttribute('data-acc-id');
+        if (id) togglePdfList(id);
+      }
+    });
+
+    // also clicking sets aria automatically via togglePdfList
+  });
 }
-}
-/* === نهاية الدالة المضافة === */
 
-
-/* تحديث الجلسة عند الخروج */
+/* session updates when leaving/returning */
 async function updateSessionOffline(){
-try{
-const deviceId=deviceIdGlobal||localStorage.getItem("deviceId");
-if(deviceId) {
-const sessionRef = ref(db, `sessions/${deviceId}`);
-// التحقق من وجود الجلسة قبل محاولة التحديث
-const snap = await get(sessionRef);
-if (snap.exists()) {
-await update(sessionRef, {online:false, lastSeen:Date.now(), exitAt:Date.now()});
-}
-}
-} catch(err){ console.warn(err);}
+  try{
+    const deviceId=deviceIdGlobal||localStorage.getItem("deviceId");
+    if(deviceId) {
+      const sessionRef = ref(db, `sessions/${deviceId}`);
+      const snap = await get(sessionRef);
+      if (snap.exists()) {
+        await update(sessionRef, {online:false, lastSeen:serverTimestamp(), exitAt:serverTimestamp()});
+      }
+    }
+  } catch(err){ console.warn(err); }
 }
 window.addEventListener("beforeunload", updateSessionOffline);
 window.addEventListener("unload", updateSessionOffline);
-window.addEventListener("pagehide", updateSessionOffline); // *** إضافة جديدة: للموثوقية على الموبايل ***
+window.addEventListener("pagehide", updateSessionOffline);
 
-
-// ==========================================================
-// === بداية الكود المضاف لتتبع الحالة (Online/Offline) ===
-// ==========================================================
-
-/* تحديث الجلسة عند العودة (جديد) */
+/* update online when returning */
 async function updateSessionOnline(){
-try{
-const deviceId = deviceIdGlobal || await getDeviceFingerprint();
-if(!deviceId) return;
-
-
-
-
-
-
-// إعادة فحص سريع للجلسة قبل إعلان "online"
-const savedCode = localStorage.getItem("qr_code_value");
-if (!savedCode) return;
-
-const codeSnap = await get(ref(db, "codes/" + savedCode));
-
-// التأكد من أن الكود لا يزال صالحًا ولهذا الجهاز
-if (codeSnap.exists() && codeSnap.val().usedBy === deviceId) {
-// الجلسة صالحة، قم بالتحديث
-const sessionRef = ref(db, `sessions/${deviceId}`);
-await update(sessionRef, {online:true, lastHeartbeat:Date.now(), exitAt:null});
-// أعد تشغيل النبضات فقط إذا كانت متوقفة
-if(!heartbeatIntervalId) startHeartbeat(deviceId);
-} else {
-// الجلسة لم تعد صالحة (ربما تم طرده أثناء غيابه)
-// لا تفعل شيئاً، startRealtimeSessionWatcher سيتعامل مع هذا
-// وسيقوم بإظهار النافذة المنبثقة
-stopHeartbeat();
-}
-} catch(err){ console.warn("updateSessionOnline failed:", err); }
+  try{
+    const deviceId = deviceIdGlobal || await getDeviceFingerprint();
+    if(!deviceId) return;
+    const savedCode = localStorage.getItem("qr_code_value");
+    if (!savedCode) return;
+    const codeSnap = await get(ref(db, "codes/" + savedCode));
+    if (codeSnap.exists() && codeSnap.val().usedBy === deviceId) {
+      const sessionRef = ref(db, `sessions/${deviceId}`);
+      await update(sessionRef, {online:true, lastHeartbeat:serverTimestamp(), exitAt:null});
+      if(!heartbeatIntervalId) startHeartbeat(deviceId);
+    } else {
+      stopHeartbeat();
+    }
+  } catch(err){ console.warn("updateSessionOnline failed:", err); }
 }
 
-/* معالجة تغيير ظهور الصفحة (جديد) */
+/* visibility change handling */
 function handleVisibilityChange() {
- // لا تفعل شيئاً إذا لم يكن المستخدم قد سجل دخوله أصلاً
-if (!localStorage.getItem("qr_code_value")) return;
-
-if (document.hidden) {
-// الصفحة مخفية - المستخدم أوفلاين
-stopHeartbeat();
-updateSessionOffline();
-} else {
-// الصفحة ظاهرة - المستخدم أونلاين
-updateSessionOnline();
+  if (!localStorage.getItem("qr_code_value")) return;
+  if (document.hidden) {
+    stopHeartbeat();
+    updateSessionOffline();
+  } else {
+    updateSessionOnline();
+  }
 }
-}
-
-// استخدام واجهة برمجة التطبيقات لظهور الصفحة (جديد)
-// هذا هو المستمع الرئيسي لتبديل التبويبات والتطبيقات
 document.addEventListener("visibilitychange", handleVisibilityChange, false);
 
-
-
-
-
-
-
-// ==========================================================
-// === نهاية الكود المضاف لتتبع الحالة (Online/Offline) ===
-// ==========================================================
-
-
-
-
-
-/* تحقق من كلمة المرور اليدوية */
+/* manual code */
 manualCodeBtn.onclick = async ()=>{ const code = manualCodeInput.value.trim(); if(code) await handleScannedCode(code); };
 
-/* PDF */
-// --- يجب تعريف هذه الدوال في النطاق العام (window) ---
-
-// === تعديل: تمت إضافة حفظ الحالة ===
+/* PDF open/close (state saved) */
 window.openPDF=function(url){
-pdfFrame.src=url;
-pdfContainer.style.display='flex';
-sessionStorage.setItem('openPdfUrl', url); // *** تمت الإضافة ***
+  pdfFrame.src=url;
+  pdfContainer.style.display='flex';
+  pdfContainer.setAttribute('aria-hidden','false');
+  sessionStorage.setItem('openPdfUrl', url);
 }
-
-// === تعديل: تمت إضافة إزالة الحالة ===
 window.closePDF=function(){
-pdfContainer.style.display='none';
-pdfFrame.src='';
-sessionStorage.removeItem('openPdfUrl'); // *** تمت الإضافة ***
+  pdfContainer.style.display='none';
+  pdfFrame.src='';
+  pdfContainer.setAttribute('aria-hidden','true');
+  sessionStorage.removeItem('openPdfUrl');
 }
 
-
-/* no touch */
-document.addEventListener('contextmenu', function(event) {
-event.preventDefault();
-});
-
+/* block context menu & dev keys */
+document.addEventListener('contextmenu', function(event) { event.preventDefault(); });
 document.addEventListener('keydown', function(event) {
-if (event.key === 'F12' ||
-(event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
-(event.ctrlKey && event.key === 'U')) {
-event.preventDefault();
-}
+  if (event.key === 'F12' ||
+  (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
+  (event.ctrlKey && event.key === 'U')) {
+    event.preventDefault();
+  }
 });
-
-
-
-
 </script>
 </body>
 </html>

@@ -6,10 +6,11 @@
 <title>M1 GC</title>
 <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="https://png.pngtree.com/png-vector/20241030/ourmid/pngtree-yellow-hard-hat-vector-png-image_14185637.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 /* Reset & base */
-html, body { height: 100vh; }
-* {margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;font-family:"Dela Gothic One",sans-serif;}
+html, body { min-height: 100vh; } /* Use min-height */
+* {user-select: none;margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;font-family:"Dela Gothic One",sans-serif;}
 /* scrollbar */
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background-color: transparent; border-radius: 10px; }
@@ -21,14 +22,15 @@ h4{ color: #333; font-size: 1.5em; text-align: center; }
 h3{text-align: center;}
 
 body{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #121212;
-  color: #f1f1f1;
-  padding: 10px;
-  margin-top: 10px;
-  min-height: 100vh;
+display: flex;
+justify-content: center;
+/* align-items: center; REMOVED - Allow content to start from top */
+background-color: #121212;
+color: #f1f1f1;
+padding: 10px;
+/* margin-top: 10px; REMOVED */
+flex-wrap: wrap;
+align-content: flex-start;
 }
 
 /* loader & overlays */
@@ -36,26 +38,43 @@ body{
 .spinner{border:6px solid #333;border-top:6px solid #007acc;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
 #loader p{margin-top:15px;font-size:1.1em;color:#007acc;}
+/* === NEW: Status Overlay === */
+#statusOverlay {
+position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+display: none; /* Hidden by default */
+flex-direction: column; justify-content: center; align-items: center;
+z-index: 10000; color: #fff; font-size: 1.2em; text-align: center;
+}
+#statusOverlay .spinner { margin-bottom: 15px; } /* Reuse spinner */
+/* === END Status Overlay === */
 #overlay{position:fixed;inset:0;background:#000d;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity .5s ease;pointer-events:none;}
 #overlay.show{opacity:1;pointer-events:auto;}
 video{width:300px;height:220px;border-radius:10px;border:2px solid #007acc;background:#000;object-fit:cover}
 #message{margin-top:10px;font-size:1.1em;text-align:center;}
 
 /* containers */
-.container{ display: none; justify-content: center; align-items: center; flex-direction: column; width: 100%; max-width: 900px; margin: auto;}
-.selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.5);width:100%;}
+.container{
+display: none;
+/* justify-content: center; REMOVED */
+/* align-items: center; REMOVED */
+flex-direction: column;
+width: 100%; max-width: 500px;
+margin: auto;
+padding-top: 15px; /* Add some space at the top */
+}
+.selection-container,.content-container{background-color:#1e1e1e;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.5);width:100%; margin-bottom: 20px;} /* Added margin-bottom */
 .selection-container h2,.content-container h2{text-align:center;padding-bottom:10px;}
-.contents{display:flex;justify-content:center;flex-wrap:wrap;flex-direction: row-reverse;}
+.contents{display:flex;justify-content:center;flex-wrap:wrap;}
 .btn{text-decoration:none;display:inline-block;margin:10px;padding:10px 15px;background-color:#1e90ff;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:1em;cursor:pointer; border: none;}
 .btn:hover{background-color:#007acc;}
 
 /* refresh row */
-.button-row { display: flex; gap: 10px; justify-content: center; width: 100%; }
+.button-row { display: flex; gap: 10px; justify-content: center; width: 100%; margin-bottom: 10px; } /* Added margin */
 .btn-refresh { background-color: #28a745; }
 .btn-refresh:hover { background-color: #218838; }
 
 /* banner */
-.myword1{ background:#79ff5f; padding:10px 50px; border:1px solid #333; border-radius:10px; font-weight:bold; font-size:larger; font-family:"IBM Plex Sans Arabic",sans-serif; margin: 10px 0; width: 100%; border-bottom: 1px solid #333; }
+.myword1{ background:#79ff5f; padding:10px 50px; border:1px solid #333; border-radius:10px; font-weight:bold; font-size:larger; font-family:"IBM Plex Sans Arabic",sans-serif; margin: 10px 0; width: 100%; border-bottom: 1px solid #333; text-align: center;} /* Added text-align */
 .myword1:hover{background:#86fd6f;}
 
 .stats {margin-top:12px;text-align:center;font-size:0.95em;color:#cbd5e1;}
@@ -70,167 +89,622 @@ video{width:300px;height:220px;border-radius:10px;border:2px solid #007acc;backg
 #sessionPopupContent button{ background:#e74c3c;color:white;border:none;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:1em;margin-top:15px; }
 #sessionPopupContent button:hover{background:#c0392b;}
 
-/* materials / grid */
-.materials{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;margin-top:15px;margin: 10px 0;border: 1px solid #333;border-radius: 10px;padding: 10px;}
-.material-btn{width: 100px;height: 100px;background: #2c2c2c;color: #fff;border-radius: 10px;display: flex;justify-content: center;align-items: center;text-align: center;cursor: pointer;font-size: 1em;padding: 10px;border: 2px solid #2c2c2c;}
-.material-btn:hover{background:#1e1e1e;}
-
 /* pdf container overlay */
 .pdf-container{position:fixed;inset:0;background:#000d;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:3000;padding:10px;}
 .pdf-container iframe{width:100%;height:90%;border:none;border-radius:10px;}
 .pdf-close-btn { position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: #fff; border: none; padding: 40px 15px; border-radius: 8px; cursor: pointer; z-index: 4000; pointer-events: auto; }
 
-/* subject / accordion */
-.subject-section { margin: 10px 0; border: 1px solid #333; border-radius: 10px; background-color: #1e1e1e; width: 100%; overflow:hidden; }
+/* === CSS: MODIFIED ACCORDION & GRID STYLES === */
+.subject-section {
+margin: 10px 0; border: 1px solid #333;
+border-radius: 10px; background-color: #1e1e1e;
+width: 100%; overflow:hidden;
+}
 .subject-section h3 {
-  color: #ffffff; margin-bottom: 0; background-color: #2c2c2c; padding: 10px; border-bottom: 1px solid #333; border-radius: 10px 10px 0 0; cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size:1em;
+color: #ffffff; margin-bottom: 0; background-color: #2c2c2c;
+padding: 10px; border-bottom: 1px solid #333;
+border-radius: 10px 10px 0 0; cursor: pointer; display:flex;
+justify-content:space-between; align-items:center; font-size:1em;
 }
 .subject-section h3:hover { background-color: #333; }
 .subject-section h3 span.icon { margin-inline-start: 10px; font-weight: bold; }
 
-/* grid: use responsive minmax */
-.pdf-grid {
-  display: none;
-  grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
-  gap: 10px;
-  justify-content: center;
-  justify-items: center;
-  padding: 10px;
-  direction: ltr;
+/* === NEW: Subject admin controls container === */
+.subject-admin-controls {
+display: none;
+align-items: center;
+gap: 5px; /* Space between admin buttons */
 }
-.pdf-grid.open { display: grid; }
 
-/* small card */
-.pdf-box { width: 90px; background: #2c2c2c; color: #f1f1f1; border: 2px solid #2c2c2c; border-radius: 10px; display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; font-size:1em; padding:10px 5px; }
-.pdf-box:hover { background-color:#1e1e1e; color:#f1f1f1; }
+.pdf-panel { display: none; padding: 10px; direction: ltr; }
+.pdf-panel.open { display: block; }
+.pdf-grid { display: grid
+;
+ grid-template-columns: repeat(3, 3fr);
+ /* width: 50%; */
+ gap: 10px;
+ min-height: 50px;
+ min-width: 50%;
+ /* margin-bottom: 15px;*/ }
+.pdf-grid-title { font-size: 1.1em; color: #888; margin: 15px 0 8px 0; padding-bottom: 5px; border-bottom: 1px solid #333; font-family: "Dela Gothic One", sans-serif; }
+.subject-comment { background: #2c2c2c; border-radius: 8px; padding: 10px; font-size: 0.95em; color: #f1f1f1; line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; }
+.pdf-panel p.no-docs-msg, p.no-docs-msg { color: #888; font-size: 0.9em; text-align: center; padding: 10px 0; }
+
+/* === CSS: PDF BOX STYLE (UPDATED) === */
+.pdf-box {
+/* width: 100%; */
+ background: #2c2c2c;
+ color: #f1f1f1;
+ border: 1px solid #333;
+ border-radius: 8px;
+ display: flex
+;
+ align-items: flex-start;
+ gap: 12px;
+ text-align: left;
+ cursor: pointer;
+ padding: 12px;
+ transition: background-color 0.2s, transform 0.15s;
+ /* flex-wrap: wrap; */
+ /* justify-content: space-between; */
+ flex-direction: column;
+}
+.pdf-box:hover { background-color: #3a3a3a; transform: translateY(-2px); }
+
+/* === MODIFIED: Thumbnail Size === */
+.pdf-thumbnail {
+width: 60px; /* Increased size */
+height: 80px; /* Increased size */
+object-fit: cover; border-radius: 4px;
+flex-shrink: 0; background-color: #444;
+display: flex; align-items: center; justify-content: center;
+cursor: zoom-in;
+overflow: hidden;
+}
+.pdf-thumbnail img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; } /* Changed image-rendering */
+.pdf-thumbnail .icon-placeholder i { font-size: 30px; color: #888; } /* Increased icon size */
+.pdf-thumbnail:hover { transform: scale(1.06); transition: transform 0.12s ease-in-out; }
+/* === END Thumbnail Size === */
+
+/* === CSS: Info Container (UPDATED) === */
+.pdf-info {
+flex-grow: 1;
+display: flex;
+flex-direction: column;
+gap: 2px; /* Reduced gap slightly for two meta lines */
+overflow: hidden; /* Prevent long text from breaking layout */
+}
+.pdf-info strong { /* Name */
+font-size: 0.95em;
+font-family: "Segoe UI", system-ui, sans-serif;
+word-break: break-word;
+color: #f1f1f1;
+}
+.pdf-description { /* Description - MODIFIED */
+ display: none;
+font-size: 0.85em;
+color: #ccc;
+font-family: "IBM Plex Sans Arabic", sans-serif;
+font-weight: 400;
+/* NEW: Truncate long descriptions */
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+max-width: 95%; /* Ensure ellipsis appears */
+}
+.pdf-meta { /* Upload Date */
+font-size: 0.8em;
+color: #888;
+font-family: "Segoe UI", system-ui, sans-serif;
+font-weight: 400;
+}
+/* === END CSS === */
+
+/* === CSS: PDF Buttons Container === */
+.pdf-buttons {
+ display: flex;
+ align-items: center;
+ /* flex-shrink: 0; */
+ gap: 5px;
+ flex-wrap: wrap;
+ flex-direction: row;
+}
+
+/* === CSS: Details Button (UPDATED) === */
+.pdf-details-btn {
+/* flex-shrink: 0; */ /* Moved to container */
+background: transparent;
+border: none;
+color: #888;
+font-size: 1.5em; /* 24px */
+cursor: pointer;
+padding: 10px;
+border-radius: 50%;
+transition: background-color 0.2s, color 0.2s;
+}
+.pdf-details-btn:hover {
+background-color: #3a3a3a;
+color: #1e90ff;
+}
+/* === END CSS === */
+
+
+/* === CSS: IMAGE PREVIEW MODAL === */
+#imagePreviewModal {
+display: none; /* Hidden by default */
+position: fixed; inset: 0;
+background-color: rgba(0, 0, 0, 0.85); /* Darker overlay */
+z-index: 5000; /* Above PDF viewer */
+justify-content: center;
+align-items: center;
+padding: 20px;
+cursor: zoom-out; /* Indicate clicking closes it */
+}
+#imagePreviewModal img {
+display: block;
+max-width: 90%;
+max-height: 90%;
+object-fit: contain; /* Show the whole image */
+border-radius: 5px;
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+cursor: default; /* Normal cursor over image */
+image-rendering: auto; /* Use browser default for preview */
+}
+/* === END CSS === */
+
+/* === CSS: Details Modal (UPDATED) === */
+.modal-overlay {
+position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+display: none; justify-content: center; align-items: center;
+z-index: 6000; /* Higher than image preview */
+padding: 20px;
+cursor: pointer; /* Close on overlay click */
+}
+.modal-content {
+background: #2c2c2c; color: #f1f1f1;
+border-radius: 15px; padding: 25px;
+width: 100%; max-width: 500px;
+box-shadow: 0 0 20px rgba(0,0,0,0.6);
+border: 1px solid #444;
+max-height: 80vh; overflow-y: auto;
+cursor: default; /* Don't close when clicking content */
+}
+.modal-content h3 {
+text-align: left; margin-bottom: 20px;
+color: #1e90ff; font-size: 1.2em;
+}
+.modal-content .details-row {
+margin-bottom: 15px;
+font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+.modal-content .details-row strong {
+display: block; color: #888;
+font-size: 0.9em; margin-bottom: 5px;
+font-family: "Dela Gothic One", sans-serif;
+}
+.modal-content .details-row span {
+font-size: 1em; line-height: 1.5;
+white-space: pre-wrap; /* This shows the full description */
+word-break: break-word;
+}
+.modal-close-btn {
+background: #1e90ff; color: white; border: none;
+padding: 10px 20px; border-radius: 10px;
+cursor: pointer; font-size: 1em; margin-top: 15px;
+display: block; margin-left: auto;
+}
+.modal-close-btn:hover { background: #007acc; }
+/* === END CSS === */
+
+/* === CSS: SEARCH BAR (MODIFIED) === */
+#searchContainer {
+position: relative;
+width: 100%;
+margin: 15px 0 0; /* Adjusted margin */
+display: flex; /* MODIFIED */
+gap: 10px; /* NEW */
+}
+#searchInput {
+width: 100%; /* Will be overridden by flex-grow */
+flex-grow: 1; /* NEW */
+padding: 12px 15px 12px 45px; /* Keep this padding for icon */
+border-radius: 10px;
+border: 1px solid #333;
+background-color: #2c2c2c;
+color: #f1f1f1;
+font-size: 1em;
+font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+#searchInput:focus {
+outline: none;
+border-color: #1e90ff;
+box-shadow: 0 0 5px #1e90ff33;
+}
+#searchIcon {
+position: absolute; /* Unchanged */
+left: 15px;
+top: 50%;
+transform: translateY(-50%);
+color: #888;
+pointer-events: none;
+}
+/* NEW BUTTON STYLE */
+#searchButton {
+padding: 12px 15px;
+border: none;
+border-radius: 10px;
+background-color: #1e90ff;
+color: white;
+font-size: 0.9em;
+font-family: "Dela Gothic One", sans-serif;
+cursor: pointer;
+flex-shrink: 0; /* Prevent button from shrinking */
+}
+#searchButton:hover {
+background-color: #007acc;
+}
+
+/* Style for search result context */
+#searchResultsContainer .pdf-info .pdf-context {
+font-size: 0.85em;
+color: #1e90ff; /* Highlight context */
+font-family: "IBM Plex Sans Arabic", sans-serif;
+font-weight: 500;
+margin-top: 4px;
+}
+/* === END CSS === */
+
+/* === NEW CSS: ADMIN CONTROLS === */
+.admin-btn {
+background-color: #444;
+color: #f1f1f1;
+border: none;
+border-radius: 50%;
+width: 30px; height: 30px;
+font-size: 0.9em;
+cursor: pointer;
+margin-left: 5px; /* Default margin */
+transition: background-color 0.2s;
+}
+.admin-btn:hover { background-color: #555; }
+.admin-btn.admin-btn-edit:hover { color: #ffc107; } /* Yellow */
+.admin-btn.admin-btn-delete:hover { color: #e74c3c; } /* Red */
+
+.pdf-box .admin-btn {
+font-size: 1.1em;
+padding: 8px;
+width: auto; height: auto;
+background: transparent;
+margin-left: 0; /* Override default */
+}
+.pdf-box .admin-btn:hover { background-color: #3a3a3a; }
+
+.admin-btn.admin-btn-add {
+width: auto;
+border-radius: 8px;
+padding: 8px 12px;
+font-size: 0.9em;
+display: block;
+margin: 10px 0 5px 0;
+background-color: #1e90ff;
+}
+.admin-btn.admin-btn-add:hover { background-color: #007acc; }
+
+.admin-btn.admin-btn-add-subject {
+display: none;
+width: 100%;
+border-radius: 8px;
+padding: 12px;
+font-size: 1em;
+margin-top: 20px;
+background-color: #17a2b8;
+}
+.admin-btn.admin-btn-add-subject:hover { background-color: #138496; }
+
+/* === NEW: Add Semester Button Style === */
+.admin-btn.admin-btn-add-semester {
+width: auto; /* Fit content */
+border-radius: 8px;
+padding: 10px 15px;
+font-size: 1em;
+margin: 15px auto 5px; /* Center horizontally */
+background-color: #6f42c1; /* Purple */
+display: block; /* Make it a block for margin auto */
+}
+.admin-btn.admin-btn-add-semester:hover { background-color: #5a349c; }
+/* === END NEW === */
+
+/* Admin Modal Form */
+#adminModal .modal-content { max-width: 600px; }
+.admin-form-group { margin-bottom: 15px; text-align: left; }
+.admin-form-group label {
+display: block;
+margin-bottom: 5px;
+color: #aaa;
+font-size: 0.9em;
+}
+.admin-form-group input,
+.admin-form-group textarea {
+width: 100%;
+padding: 10px;
+border-radius: 8px;
+border: 1px solid #444;
+background-color: #1e1e1e;
+color: #f1f1f1;
+font-size: 1em;
+font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+.admin-form-group textarea {
+min-height: 100px;
+resize: vertical;
+}
+#adminModal .modal-close-btn {
+display: inline-block;
+margin-left: 10px;
+width: auto;
+}
+#adminModal #adminModalSave { background-color: #28a745; }
+#adminModal #adminModalSave:hover { background-color: #218838; }
+#adminModal #adminModalClose { background-color: #e74c3c; }
+#adminModal #adminModalClose:hover { background-color: #c0392b; }
+/* === END ADMIN CSS === */
+
+/* === NEW: Drag and Drop CSS === */
+.sortable-ghost {
+opacity: 0.4;
+background: #444;
+border-radius: 8px;
+}
+/* === NEW: Drag Handle CSS === */
+.pdf-drag-handle {
+/* flex-shrink: 0; */ /* Moved to container */
+padding: 10px 8px; /* Slightly tighter padding */
+font-size: 1.3em;
+color: #888;
+cursor: grab;
+background: transparent;
+border-radius: 8px;
+/* margin-left: 5px; */ /* Removed, rely on gap */
+}
+.pdf-drag-handle:hover {
+background-color: #3a3a3a;
+color: #fff;
+}
+.pdf-drag-handle:active {
+cursor: grabbing;
+}
+/* Remove grab cursor from info */
+.admin-sortable-grid .pdf-info {
+cursor: default !important;
+}
+.admin-sortable-grid .pdf-info:active {
+cursor: default !important;
+}
+/* === END NEW CSS === */
+
+/* === NEW: Custom Dialog Modal Styles === */
+#customModalOverlay {
+z-index: 7000; /* Higher than admin modal */
+}
+#customModalButtons .modal-btn {
+background: #444;
+color: white;
+border: none;
+padding: 10px 20px;
+border-radius: 10px;
+cursor: pointer;
+font-size: 1em;
+margin-left: 10px;
+font-family: "Dela Gothic One", sans-serif;
+}
+#customModalButtons .modal-btn:hover {
+background: #555;
+}
+#customModalButtons .modal-btn-primary {
+background: #1e90ff;
+}
+#customModalButtons .modal-btn-primary:hover {
+background: #007acc;
+}
+#customModalButtons .modal-btn-danger {
+background: #e74c3c;
+}
+#customModalButtons .modal-btn-danger:hover {
+background: #c0392b;
+}
+/* === END NEW === */
+
 
 @media (max-width:600px){
-  video{width:240px;height:170px;}
-  #manualCodeContainer{width:90%;}
+video{width:240px;height:170px;}
+#manualCodeContainer{width:90%;}
+/* === MODIFIED: Thumbnail Size Mobile === */
+.pdf-thumbnail { width: 55px; height: 75px; }
+.pdf-thumbnail .icon-placeholder i { font-size: 26px; }
+/* === END Thumbnail Mobile === */
+.pdf-info strong { font-size: 0.9em; }
+.pdf-description { font-size: 0.8em; }
+.pdf-meta { font-size: 0.75em; }
+/* Adjust search for mobile */
+#searchButton {
+font-size: 0.8em;
+padding: 12px 10px;
+}
+/* Adjust details button padding on mobile */
+.pdf-details-btn {
+padding: 8px;
+font-size: 1.3em;
+}
+/* Adjust admin buttons on mobile */
+.pdf-box .admin-btn {
+padding: 6px;
+font-size: 1em;
+}
+/* === NEW: Adjust drag handle on mobile === */
+.pdf-drag-handle {
+padding: 8px 6px;
+font-size: 1.1em;
+}
+/* Adjust admin settings button on mobile */
+#adminSettingsBtn {
+top: 10px !important;
+right: 10px !important;
+width: 35px !important;
+height: 35px !important;
+font-size: 1em !important;
+}
+/* Ensure buttons stack nicely on small screens */
+.pdf-buttons {
+margin-left: auto; /* Push buttons to the right */
+}
+/* === NEW: Adjust subject admin controls on mobile === */
+.subject-admin-controls {
+gap: 2px;
+padding-left: 5px;
+}
+.subject-admin-controls .admin-btn {
+width: 28px;
+height: 28px;
+font-size: 0.8em;
+}
+.subject-admin-controls .pdf-drag-handle {
+font-size: 1em;
+padding: 6px 4px;
+}
+/* === NEW: Adjust semester delete button on mobile === */
+.content-container .admin-btn-delete {
+top: 10px !important;
+right: 10px !important;
+width: 35px !important;
+height: 35px !important;
+font-size: 1em !important;
+}
 }
 </style>
 </head>
 <body>
 <div id="loader">
- <div class="spinner"></div>
- <p>Vérification de la connexion...</p>
+<div class="spinner"></div>
+<p>Vérification de la connexion...</p>
 </div>
 
+<div id="statusOverlay">
+<div class="spinner"></div>
+<p id="statusOverlayText">Mise à jour...</p>
+</div>
 <div id="overlay" role="dialog" aria-modal="true">
- <video id="video" autoplay playsinline></video>
- <div id="message">Veuillez scanner le code QR ou saisir le code pour entrer...</div>
- <input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
- <div id="manualCodeContainer">
-  <input type="text" id="manualCodeInput" placeholder="Entrez le code ici" />
-  <button id="manualCodeBtn">vérification</button>
- </div>
+<video id="video" autoplay playsinline></video>
+<div id="message">Veuillez scanner le code QR ou saisir le code pour entrer...</div>
+<input type="file" id="fileInput" accept="image/*" style="margin-top:10px;">
+<div id="manualCodeContainer">
+<input type="text" id="manualCodeInput" placeholder="Entrez le code ici" />
+<button id="manualCodeBtn">vérification</button>
+</div>
 </div>
 
 <div id="sessionPopup">
- <div id="sessionPopupContent">
-  SESSION TERMINEE 🔒
-  <br>
-  <button id="popupBtn">OK</button>
- </div>
+<div id="sessionPopupContent">
+SESSION TERMINEE 🔒
+<br>
+<button id="popupBtn">OK</button>
+</div>
 </div>
 
 <div class="container" id="content" aria-live="polite">
- <div class="selection-container" id="selectionContainer">
-  <h2>🇵🇸</h2>
-  <h3> 👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️ </h3>
-  <h2>Choisissez le semestre</h2>
-  <div class="contents">
-   <a href="#" class="btn" onclick="goToPage('contentS2')">S2</a>
-   <a href="#" class="btn" onclick="goToPage('contentS1')">S1</a>
-  </div>
-  <h4>X</h4>
- </div>
 
- <div class="content-container" id="contentS1" style="display:none;">
-  <h2>🇵🇸</h2>
-  <h2>Semestre 1</h2>
-  <div class="button-row">
-    <button class="btn" onclick="returnToSelection()">RETOUR</button>
-    <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
-  </div>
+<div id="globalHeader" style="position: relative; background-color: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,0,0,.5);">
+<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;"> <h2 style="font-size:1.3em; text-align:center; padding-bottom: 0; margin-bottom: 0; flex-grow: 1;">👷🏻‍♀️ M1 STRUCTURE 👷🏻‍♂️</h2>
+<button id="adminSettingsBtn" class="admin-btn" style="display: none; width: 40px; height: 40px; font-size: 1.2em; border-radius: 50%; flex-shrink: 0;" aria-label="Paramètres Admin"><i class="fas fa-cog"></i></button>
+</div>
+<p id="welcomeMessage" style="padding-top:10px; text-align: center; color: #ccc; font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 1em; margin-top: -10px; margin-bottom: 15px; width: 100%;"></p>
+<div id="searchContainer">
+<i class="fas fa-search" id="searchIcon"></i>
+<input type="text" id="searchInput" placeholder="Rechercher un document...">
+<button id="searchButton">Chercher</button>
+</div>
+</div>
+<div class="selection-container" id="selectionContainer">
+<h2>🇵🇸</h2>
+<h2>Choisissez le semestre</h2>
+<div class="contents" id="semesterButtonsContainer"></div>
 
-  <button class="myword1">سبحان الله و الحمد لله و لا اله الا الله و الله أكبر</button>
+<h4>X</h4>
+</div>
 
-  <div class="subject-section">
-   <h3 onclick="togglePdfList('mds-grid')" data-acc-id="mds-grid" aria-controls="mds-grid" aria-expanded="false">MDS <span class="icon">▼</span></h3>
-   <div class="pdf-grid" id="mds-grid" aria-hidden="true">
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>
-
-   </div>
-  </div>
-
-  <div class="subject-section">
-   <h3 onclick="togglePdfList('dds-grid')" data-acc-id="dds-grid" aria-controls="dds-grid" aria-expanded="false">DDS <span class="icon">▼</span></h3>
-   <div class="pdf-grid" id="dds-grid" aria-hidden="true">
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>
-         <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>
-         <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 1</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 2</div>
-    <div class="pdf-box" onclick="openPDF('https://drive.google.com/file/d/1SOvG9-Tzdl7LF-Z0rxYJ0KRw5w3Rxt3j/preview?embedded=true')">PDF 3</div>
-
-   </div>
-  </div>
-
-  <div class="subject-section">
-   <h3 onclick="togglePdfList('beton-grid')" data-acc-id="beton-grid" aria-controls="beton-grid" aria-expanded="false">BETON <span class="icon">▼</span></h3>
-   <div class="pdf-grid" id="beton-grid" aria-hidden="true"></div>
-  </div>
-
-  <div class="subject-section">
-   <h3 onclick="togglePdfList('charpente-grid')" data-acc-id="charpente-grid" aria-controls="charpente-grid" aria-expanded="false">CHARPENTE <span class="icon">▼</span></h3>
-   <div class="pdf-grid" id="charpente-grid" aria-hidden="true"></div>
-  </div>
-
-  <h4>X</h4>
- </div>
-
- <div class="content-container" id="contentS2" style="display:none;">
-  <h2>🇵🇸</h2>
-  <h2>Semestre 2</h2>
-  <div class="button-row">
-    <button class="btn" onclick="returnToSelection()">RETOUR</button>
-    <button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
-  </div>
-
-  <button class="myword1">سبحان الله و الحمد لله و لا اله الا الله و الله أكبر</button>
-
-  <div class="materials"></div>
- </div>
+<div class="content-container" id="searchResultsContainer" style="display: none;">
+<h2>Résultats de recherche</h2>
+<div class="button-row">
+<button class="btn" onclick="returnToSelection()">RETOUR</button>
+</div>
+<div id="searchResultsGrid" class="pdf-grid">
+</div>
+<p id="noResultsMessage" class="no-docs-msg" style="display: none;">Aucun document trouvé.</p>
+</div>
+<div id="semesterPagesContainer"></div>
 </div>
 
 <div class="pdf-container" id="pdfContainer" aria-hidden="true">
- <button class="pdf-close-btn" onclick="closePDF()">RETOUR</button>
- <iframe id="pdfFrame" src="" title="PDF viewer"></iframe>
+<button class="pdf-close-btn" onclick="closePDF()">RETOUR</button>
+<iframe id="pdfFrame" src="" title="PDF viewer"></iframe>
 </div>
 
+<div id="imagePreviewModal" onclick="closeImagePreview()">
+<img id="imagePreviewContent" src="" alt="Image Preview" onclick="(e) => e.stopPropagation()">
+</div>
+
+<div id="detailsModal" class="modal-overlay">
+<div class="modal-content" onclick="(e) => e.stopPropagation()">
+<h3 id="detailsModalTitle">Détails du document</h3>
+<div id="detailsModalBody">
+</div>
+<button id="detailsModalClose" class="modal-close-btn">Fermer</button>
+</div>
+</div>
+
+<div id="adminModal" class="modal-overlay">
+<div class="modal-content" onclick="(e) => e.stopPropagation()">
+<h3 id="adminModalTitle">Action Administrateur</h3>
+<div id="adminModalBody">
+</div>
+<div style="text-align: right; margin-top: 20px;">
+<button id="adminModalClose" class="modal-close-btn">Annuler</button>
+<button id="adminModalSave" class="modal-close-btn">Sauvegarder</button>
+</div>
+</div>
+</div>
+
+<div id="customModalOverlay" class="modal-overlay">
+<div class="modal-content" onclick="(e) => e.stopPropagation()">
+<h3 id="customModalTitle" style="color: #f1f1f1; margin-bottom: 15px; text-align: left;">Message</h3>
+<div id="customModalBody" style="font-family: 'IBM Plex Sans Arabic', sans-serif; line-height: 1.6; white-space: pre-wrap; margin-bottom: 20px; font-size: 1.1em;">
+</div>
+<div id="customModalInputContainer" style="margin-bottom: 20px; display: none;">
+<input type="text" id="customModalInput" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background-color: #1e1e1e; color: #f1f1f1; font-size: 1em; font-family: 'IBM Plex Sans Arabic', sans-serif;">
+</div>
+<div id="customModalButtons" style="text-align: right;">
+</div>
+</div>
+</div>
 <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script type="module">
 // Firebase imports (unchanged)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get, set, onValue, onDisconnect, update, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, get, set, onValue, onDisconnect, update, runTransaction, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+// === NEW: Import query functions ===
+import { query, orderByChild, startAt } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
-  authDomain: "my-id-19724.firebaseapp.com",
-  databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
-  projectId: "my-id-19724",
-  storageBucket: "my-id-19724.appspot.com",
-  messagingSenderId: "788057820357",
-  appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
-  measurementId: "G-5QX27XCFK6"
+apiKey: "AIzaSyC4ffOpGSHS3fdRV1X0aztZU7D1hzttYq0",
+authDomain: "my-id-19724.firebaseapp.com",
+databaseURL: "https://my-id-19724-default-rtdb.firebaseio.com",
+projectId: "my-id-19724",
+storageBucket: "my-id-19724.appspot.com",
+messagingSenderId: "788057820357",
+appId: "1:788057820357:web:b37f49ddb60ec489bd34ac",
+measurementId: "G-5QX27XCFK6"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -249,6 +723,53 @@ const sessionPopup = document.getElementById("sessionPopup");
 const popupBtn = document.getElementById("popupBtn");
 const pdfContainer = document.getElementById('pdfContainer');
 const pdfFrame = document.getElementById('pdfFrame');
+const semesterButtonsContainer = document.getElementById('semesterButtonsContainer');
+const semesterPagesContainer = document.getElementById('semesterPagesContainer');
+const imagePreviewModal = document.getElementById('imagePreviewModal');
+const imagePreviewContent = document.getElementById('imagePreviewContent');
+const selectionContainer = document.getElementById('selectionContainer'); // Added
+
+// === JS: SEARCH UI (MODIFIED) ===
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton'); // NEW
+const searchResultsContainer = document.getElementById('searchResultsContainer');
+const searchResultsGrid = document.getElementById('searchResultsGrid');
+const noResultsMessage = document.getElementById('noResultsMessage');
+// === END JS ===
+
+// === JS: Details Modal UI ===
+const detailsModal = document.getElementById('detailsModal');
+const detailsModalTitle = document.getElementById('detailsModalTitle');
+const detailsModalBody = document.getElementById('detailsModalBody');
+const detailsModalClose = document.getElementById('detailsModalClose');
+// === END JS ===
+
+// === NEW JS: Admin Modal UI ===
+const adminModal = document.getElementById('adminModal');
+const adminModalTitle = document.getElementById('adminModalTitle');
+const adminModalBody = document.getElementById('adminModalBody');
+const adminModalClose = document.getElementById('adminModalClose');
+const adminModalSave = document.getElementById('adminModalSave');
+// === END NEW JS ===
+
+// === NEW: Admin Settings Button ===
+const adminSettingsBtn = document.getElementById('adminSettingsBtn');
+// === END NEW ===
+
+// === NEW: Status Overlay Elements ===
+const statusOverlay = document.getElementById('statusOverlay');
+const statusOverlayText = document.getElementById('statusOverlayText');
+// === END Status Overlay Elements ===
+
+// === NEW: Custom Dialog UI Elements ===
+const customModalOverlay = document.getElementById('customModalOverlay');
+const customModalTitle = document.getElementById('customModalTitle');
+const customModalBody = document.getElementById('customModalBody');
+const customModalInputContainer = document.getElementById('customModalInputContainer');
+const customModalInput = document.getElementById('customModalInput');
+const customModalButtons = document.getElementById('customModalButtons');
+// === END NEW ===
+
 
 let scanning = false;
 let streamRef = null;
@@ -257,506 +778,1858 @@ const ctx = canvas.getContext("2d");
 let deviceIdGlobal = null;
 let heartbeatIntervalId = null;
 let allowedCodesSet = new Set();
+let searchableDocs = []; // === JS: SEARCH INDEX (NEW) ===
+let adminNamesSet = new Set(); // === NEW: Set to store admin names ===
 
-/* Fingerprint */
-async function getDeviceFingerprint() {
-  if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId");
-  const fp = await FingerprintJS.load();
-  const result = await fp.get();
-  const deviceId = result.visitorId;
-  localStorage.setItem("deviceId", deviceId);
-  return deviceId;
+// === NEW: Store current user code ===
+let currentUserCode = null;
+// === END NEW ===
+
+// === NEW: Dua list (EXPANDED) ===
+const duas = [
+"اللهم إنك عفو كريم تحب العفو فاعف عنا",
+"سبحان الله وبحمده، سبحان الله العظيم",
+"اللهم آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار",
+"لا إله إلا أنت سبحانك إني كنت من الظالمين",
+"اللهم صل وسلم على نبينا محمد",
+"رب اغفر لي ولوالدي وللمؤمنين والمؤمنات",
+"يا حي يا قيوم برحمتك أستغيث",
+"اللهم أعنا على ذكرك وشكرك وحسن عبادتك",
+"ربنا لا تزغ قلوبنا بعد إذ هديتنا",
+"اللهم إني أسألك الهدى والتقى والعفاف والغنى",
+"ربنا هب لنا من أزواجنا وذرياتنا قرة أعين واجعلنا للمتقين إمامًا",
+"اللهم إني أسألك علما نافعا ورزقا طيبا وعملا متقبلا",
+"اللهم اغفر لي ذنبي كله دقه وجله وأوله وآخره وعلانيته وسره",
+"لا حول ولا قوة إلا بالله",
+"أستغفر الله الذي لا إله إلا هو الحي القيوم وأتوب إليه",
+"اللهم يا مقلب القلوب ثبت قلبي على دينك",
+"رب زدني علما",
+"اللهم إني أعوذ بك من الهم والحزن، والعجز والكسل، والبخل والجبن، وضلع الدين وغلبة الرجال",
+"اللهم ارزقنا الجنة بغير حساب ولا سابقة عذاب",
+"اللهم إني أسألك العافية في الدنيا والآخرة",
+"سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر",
+"اللهم إني أعوذ بك من علم لا ينفع، ومن قلب لا يخشع، ومن نفس لا تشبع، ومن دعوة لا يستجاب لها",
+"رب اشرح لي صدري ويسر لي أمري واحلل عقدة من لساني يفقهوا قولي",
+"اللهم إني أسألك الجنة وما قرب إليها من قول أو عمل",
+"اللهم أصلح لي ديني الذي هو عصمة أمري، وأصلح لي دنياي التي فيها معاشي",
+"اللهم إني ظلمت نفسي ظلما كثيرا، ولا يغفر الذنوب إلا أنت، فاغفر لي مغفرة من عندك، وارحمني إنك أنت الغفور الرحيم",
+"يا رب، لك الحمد كما ينبغي لجلال وجهك وعظيم سلطانك",
+"اللهم توفنا مسلمين وألحقنا بالصالحين",
+"ربنا لا تؤاخذنا إن نسينا أو أخطأنا",
+"اللهم اجعلنا من أهل القرآن الذين هم أهلك وخاصتك",
+"اللهم بارك لنا في أوقاتنا وأعمارنا",
+"اللهم ارزقني فهم النبيين وحفظ المرسلين",
+"اللهم إني أسألك حبك وحب من يحبك",
+"رب أنزلني منزلا مباركا وأنت خير المنزلين",
+"اللهم إني أسألك من فضلك ورحمتك، فإنه لا يملكها إلا أنت",
+"اللهم اهدنا فيمن هديت، وعافنا فيمن عافيت",
+"ربنا أتمم لنا نورنا واغفر لنا إنك على كل شيء قدير",
+"اللهم اجعل خير أعمالنا خواتيمها، وخير أيامنا يوم نلقاك",
+"اللهم إني أعوذ بك من زوال نعمتك، وتحول عافيتك، وفجاءة نقمتك، وجميع سخطك",
+"اللهم وفقني لما تحب وترضى",
+"اللهم إني أسألك علما نافعا",
+"أعوذ بكلمات الله التامات من شر ما خلق",
+"بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم",
+"اللهم إني أصبحت أشهدك وأشهد حملة عرشك وملائكتك وجميع خلقك أنك أنت الله لا إله إلا أنت وحدك لا شريك لك وأن محمدا عبدك ورسولك",
+"اللهم ما أصبح بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك فلك الحمد ولك الشكر",
+"رضيت بالله ربا، وبالإسلام دينا، وبمحمد صلى الله عليه وسلم نبيا ورسولا",
+"حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم",
+"اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت",
+"اللهم إني أعوذ بك من الكفر والفقر، وأعوذ بك من عذاب القبر، لا إله إلا أنت",
+"يا مقيل العثرات، يا قاضي الحاجات، اقض حاجتي، وفرج كربتي",
+"اللهم ارزقنا علما نافعا، ورزقا واسعا، وشفاء من كل داء",
+"اللهم إني أسألك خير هذا اليوم: فتحه، ونصره، ونوره، وبركته، وهداه",
+"اللهم إني أسألك التوفيق في كل أموري",
+"اللهم اجعل القرآن ربيع قلوبنا، ونور صدورنا",
+"اللهم لا سهل إلا ما جعلته سهلا، وأنت تجعل الحزن إذا شئت سهلا"
+];
+// === END NEW ===
+
+
+// === NEW JS: Admin Helper ===
+const isAdmin = () => localStorage.getItem("isAdmin") === "true";
+// === END NEW JS ===
+
+// === NEW: Custom Dialog Functions ===
+let customModalResolver = null;
+
+function closeCustomModal() {
+customModalOverlay.style.display = 'none';
+if (customModalResolver) {
+customModalResolver(null); // Resolve with null/false if closed unexpectedly
+customModalResolver = null;
+}
 }
 
-function getDeviceName() {
-  try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; }
-  catch { return "Unknown Device"; }
+// Handle Escape key
+document.addEventListener('keydown', function(event) {
+if (event.key === 'Escape' && customModalOverlay.style.display === 'flex') {
+// Find the cancel button and click it
+const cancelBtn = document.getElementById('customModalCancel');
+if(cancelBtn) {
+cancelBtn.click();
+} else {
+// If only OK button, click it
+const okBtn = document.getElementById('customModalOK');
+if (okBtn) okBtn.click();
+}
+}
+});
+
+// Handle overlay click
+customModalOverlay.onclick = (e) => {
+if (e.target === customModalOverlay) {
+const cancelBtn = document.getElementById('customModalCancel');
+if(cancelBtn) {
+cancelBtn.click();
+} else {
+const okBtn = document.getElementById('customModalOK');
+if (okBtn) okBtn.click();
+}
+}
+};
+
+function showCustomAlert(message, title = 'Notification') {
+return new Promise((resolve) => {
+customModalResolver = resolve;
+customModalTitle.textContent = title;
+customModalBody.textContent = message;
+customModalInputContainer.style.display = 'none';
+
+customModalButtons.innerHTML = `
+<button id="customModalOK" class="modal-btn modal-btn-primary">OK</button>
+`;
+
+document.getElementById('customModalOK').onclick = () => {
+customModalOverlay.style.display = 'none';
+if (customModalResolver) {
+customModalResolver(true);
+customModalResolver = null;
+}
+};
+
+customModalOverlay.style.display = 'flex';
+});
 }
 
-function getLocation() {
-  return new Promise((resolve) => {
-    if (!("geolocation" in navigator)) return resolve(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({lat: pos.coords.latitude,lng: pos.coords.longitude,accuracy: pos.coords.accuracy}),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  });
+function showCustomConfirm(message, {
+title = 'Confirmation',
+confirmText = 'Confirmer',
+cancelText = 'Annuler',
+isDanger = false
+} = {}) {
+return new Promise((resolve) => {
+customModalResolver = resolve;
+customModalTitle.textContent = title;
+customModalBody.textContent = message;
+customModalInputContainer.style.display = 'none';
+
+const confirmClass = isDanger ? 'modal-btn-danger' : 'modal-btn-primary';
+
+customModalButtons.innerHTML = `
+<button id="customModalCancel" class="modal-btn">${cancelText}</button>
+<button id="customModalConfirm" class="modal-btn ${confirmClass}">${confirmText}</button>
+`;
+
+document.getElementById('customModalConfirm').onclick = () => {
+customModalOverlay.style.display = 'none';
+if (customModalResolver) {
+customModalResolver(true);
+customModalResolver = null;
+}
+};
+
+document.getElementById('customModalCancel').onclick = () => {
+customModalOverlay.style.display = 'none';
+if (customModalResolver) {
+customModalResolver(false);
+customModalResolver = null;
+}
+};
+
+customModalOverlay.style.display = 'flex';
+});
 }
 
-/* camera */
-async function startCamera() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = stream;
-    streamRef = stream;
-    scanning = true;
-    scanLoop();
-  } catch (err) {
-    message.textContent = "L'appareil photo n'a pas pu démarrer !";
-    console.error(err);
-  }
+function showCustomPrompt(message, {
+title = 'Saisie Requise',
+confirmText = 'Confirmer',
+cancelText = 'Annuler',
+initialValue = ''
+} = {}) {
+return new Promise((resolve) => {
+customModalResolver = resolve;
+customModalTitle.textContent = title;
+customModalBody.textContent = message;
+
+customModalInputContainer.style.display = 'block';
+customModalInput.value = initialValue;
+
+customModalButtons.innerHTML = `
+<button id="customModalCancel" class="modal-btn">${cancelText}</button>
+<button id="customModalConfirm" class="modal-btn modal-btn-primary">${confirmText}</button>
+`;
+
+document.getElementById('customModalConfirm').onclick = () => {
+const value = customModalInput.value;
+customModalOverlay.style.display = 'none';
+if (customModalResolver) {
+customModalResolver(value);
+customModalResolver = null;
 }
+};
+
+document.getElementById('customModalCancel').onclick = () => {
+customModalOverlay.style.display = 'none';
+if (customModalResolver) {
+customModalResolver(null); // Resolve with null for cancellation
+customModalResolver = null;
+}
+};
+
+customModalOverlay.style.display = 'flex';
+customModalInput.focus();
+customModalInput.select();
+});
+}
+// === END NEW ===
+
+
+/* Fingerprint (unchanged) */
+async function getDeviceFingerprint() { if (localStorage.getItem("deviceId")) return localStorage.getItem("deviceId"); const fp = await FingerprintJS.load(); const result = await fp.get(); const deviceId = result.visitorId; localStorage.setItem("deviceId", deviceId); return deviceId; }
+function getDeviceName() { try { return `${navigator.platform || "unknown"} — ${navigator.userAgent || "unknown"}`; } catch { return "Unknown Device"; } }
+function getLocation() { return new Promise((resolve) => { if (!("geolocation" in navigator)) return resolve(null); navigator.geolocation.getCurrentPosition( (pos) => resolve({lat: pos.coords.latitude,lng: pos.coords.longitude,accuracy: pos.coords.accuracy}), () => resolve(null), { enableHighAccuracy: true, timeout: 8000 } ); }); }
+
+/* camera (unchanged) */
+async function startCamera() { try { const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); video.srcObject = stream; streamRef = stream; scanning = true; scanLoop(); } catch (err) { message.textContent = "L'appareil photo n'a pas pu démarrer !"; console.error(err); } }
 function stopCamera() { scanning=false; if(streamRef) streamRef.getTracks().forEach(t=>t.stop()); video.srcObject=null; streamRef=null; }
 
-/* scan loop */
-async function scanLoop() {
-  if (!scanning) return;
-  if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-    if (code) await handleScannedCode(code.data.trim());
-  }
-  requestAnimationFrame(scanLoop);
+/* scan loop (unchanged) */
+async function scanLoop() { if (!scanning) return; if (video.readyState === video.HAVE_ENOUGH_DATA) { canvas.width = video.videoWidth; canvas.height = video.videoHeight; ctx.drawImage(video, 0, 0, canvas.width, canvas.height); const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height); const code = jsQR(imageData.data, canvas.width, canvas.height); if (code) await handleScannedCode(code.data.trim()); } requestAnimationFrame(scanLoop); }
+
+/* handle image file QR (unchanged) */
+fileInput.addEventListener("change", async (e)=>{ const file = e.target.files[0]; if(!file) return; const img = new Image(); img.onload = async ()=>{ canvas.width=img.width; canvas.height=img.height; ctx.drawImage(img,0,0); const imageData=ctx.getImageData(0,0,canvas.width,canvas.height); const code = jsQR(imageData.data, canvas.width, canvas.height); if(code) await handleScannedCode(code.data.trim()); else message.textContent="Aucun code QR trouvé!"; }; img.src = URL.createObjectURL(file); });
+
+/* allowed codes watcher (unchanged) */
+function startAllowedCodesWatcher() { onValue(ref(db,'allowedCodes'), snap => { const val = snap.val()||{}; allowedCodesSet = new Set(Object.keys(val)); }); }
+
+// === NEW: Admin Names Watcher ===
+function startAdminNamesWatcher() {
+const adminUsersRef = ref(db, 'adminUsers');
+onValue(adminUsersRef, (snapshot) => {
+const adminUsers = snapshot.val() || {};
+adminNamesSet = new Set(); // Clear the set
+Object.values(adminUsers).forEach(adminData => {
+if (adminData && adminData.name) {
+adminNamesSet.add(adminData.name);
+}
+});
+});
+}
+// === END NEW ===
+
+// === DELETED: Notification Watcher ===
+
+
+/* handle scanned or manual code (unchanged) */
+async function handleScannedCode(scanned) { if (!allowedCodesSet.has(scanned)) { message.textContent = "Code invalide ❌"; return; } const codeRef = ref(db, "codes/" + scanned); const snapshot = await get(codeRef); const deviceId = await getDeviceFingerprint(); deviceIdGlobal = deviceId; if (!snapshot.exists() || snapshot.val().usedBy === deviceId) { if(!snapshot.exists()) await set(codeRef,{used:true,usedBy:deviceId,lastUsedAt:serverTimestamp()}); await grantAccess(scanned); } else { message.textContent = "❌ Ce code est utilisé depuis un autre appareil"; } }
+
+/* Presence helpers (Unchanged) */
+async function setupPresence(deviceId){ try{ const connectedRef = ref(db, ".info/connected"); onValue(connectedRef, async snap => { const isConnected = !!snap.val(); const sessionRef = ref(db, `sessions/${deviceId}`); if (isConnected) { try{ await update(sessionRef, { online: true, lastHeartbeat: serverTimestamp() }); await onDisconnect(sessionRef).update({ online: false, lastSeen: serverTimestamp(), exitAt: serverTimestamp() }); }catch(e){ console.warn("setupPresence - error setting onDisconnect/update:", e); } } }); } catch(err){ console.warn("setupPresence failed:", err); } }
+function addRobustVisibilityHandlers(deviceId){ document.addEventListener('visibilitychange', () => { if (!localStorage.getItem("qr_code_value")) return; if (document.visibilityState === 'visible') { updateSessionOnline(); } else { updateSessionOffline(); } }); window.addEventListener('pagehide', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); }, {passive:true}); window.addEventListener('blur', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); }); document.addEventListener('freeze', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); }); window.addEventListener('beforeunload', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); }); window.addEventListener('unload', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); }); window.addEventListener('resume', () => { updateSessionOnline(); }); window.addEventListener('pause', () => { updateSessionOffline(); }); }
+
+
+/* === JS: DYNAMIC CONTENT LOADERS (UPDATED FOR ADMIN & SEARCH) === */
+
+function escapeHtml(unsafe){ return String(unsafe||"").replace(/[&<>\"'`=\/]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;",'/':'&#x2F;','`':'&#x60','=':'&#x3D'}[s])); }
+function getDriveFileId(url){ if(!url || typeof url !== 'string') return null; const m1 = url.match(/\/d\/([a-zA-Z0-9_-]+)/); if(m1 && m1[1]) return m1[1]; const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/); if(m2 && m2[1]) return m2[1]; const m3 = url.match(/drive.google.com\/file\/d:\/([a-zA-Z0-9_-]+)/); if(m3 && m3[1]) return m3[1]; return null; }
+// === MODIFIED: Thumbnail URL Generation ===
+function buildDriveThumbnailUrl(fileId, size=800){ // Default to higher size
+if(!fileId) return null;
+return `https://drive.google.com/thumbnail?authuser=0&sz=w${size}&id=${fileId}`; // Use 'w' prefix for width constraint
+}
+function buildDrivePreviewUrl(fileId){ if(!fileId) return null; return `https://drive.google.com/uc?export=view&id=${fileId}`; }
+
+// === NEW: PDF Visibility Checker ===
+/**
+* Checks if a PDF is visible to the current user.
+* @param {string|object} visibility - The visibility data from Firebase.
+* @param {string} userCode - The current user's logged-in code.
+* @returns {boolean} - True if the PDF should be shown, false otherwise.
+*/
+function isPdfVisible(visibility, userCode) {
+// Default to public if visibility is not set
+if (!visibility || visibility === 'public') {
+return true;
+}
+// Explicitly private
+if (visibility === 'private') {
+return false;
+}
+// Check for specific code list
+if (typeof visibility === 'object' && visibility.specific && Array.isArray(visibility.specific)) {
+return visibility.specific.includes(userCode);
+}
+// Fallback for any other malformed data
+return true;
+}
+// === END NEW ===
+
+
+// === NEW: PDF Drag and Drop Handler ===
+window.handleDragEnd = async function(evt) {
+if (evt.oldIndex === evt.newIndex) return; // No change
+
+const grid = evt.from;
+const dbPath = grid.dataset.path;
+if (!dbPath) {
+console.error("Sortable grid missing data-path!");
+return;
 }
 
-/* handle image file QR */
-fileInput.addEventListener("change", async (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const img = new Image();
-  img.onload = async ()=>{
-    canvas.width=img.width; canvas.height=img.height;
-    ctx.drawImage(img,0,0);
-    const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-    if(code) await handleScannedCode(code.data.trim());
-    else message.textContent="Aucun code QR trouvé!";
-  };
-  img.src = URL.createObjectURL(file);
+// Show a mini-loader or disable grid
+grid.style.opacity = '0.5';
+grid.style.pointerEvents = 'none';
+
+try {
+const dbRef = ref(db, dbPath);
+const snap = await get(dbRef);
+const data = snap.val() || {};
+
+// Create the array from DB data, not from DOM
+// This is safer against rendering artifacts
+const sortedArray = Object.keys(data)
+.map(key => ({ key: parseInt(key), data: data[key] }))
+.filter(item => !isNaN(item.key) && item.data && item.data.name) // Ensure valid items
+.sort((a, b) => a.key - b.key);
+
+// Perform the move in the array
+const [movedItem] = sortedArray.splice(evt.oldIndex, 1);
+sortedArray.splice(evt.newIndex, 0, movedItem);
+
+// Re-build the data object with new numeric keys
+const updatedData = {};
+sortedArray.forEach((item, index) => {
+updatedData[index] = item.data; // Re-key from 0, 1, 2...
 });
 
-/* allowed codes watcher */
-function startAllowedCodesWatcher() {
-  onValue(ref(db,'allowedCodes'), snap => {
-    const val = snap.val()||{};
-    allowedCodesSet = new Set(Object.keys(val));
-  });
+// Set the new object in Firebase
+await set(dbRef, updatedData);
+// The onValue listener will automatically refresh the UI.
+// We don't need to re-enable the grid, as the re-render will create a new one.
+
+} catch (e) {
+console.error("Erreur réorganisation:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la réorganisation. Veuillez rafraîchir.");
+// Re-enable grid on error
+grid.style.opacity = '1';
+grid.style.pointerEvents = 'auto';
+}
+}
+// === END NEW ===
+
+// === NEW: Dua Function ===
+window.updateDua = function(semesterKey) {
+const duaElement = document.getElementById(`dua-display-${semesterKey}`);
+if (!duaElement) return;
+
+// Get a random dua
+const randomIndex = Math.floor(Math.random() * duas.length);
+const randomDua = duas[randomIndex];
+
+// Set the text
+duaElement.textContent = randomDua;
+}
+// === END NEW ===
+
+
+function startContentWatchers() {
+const contentRef = ref(db, 'content');
+onValue(contentRef, (snapshot) => {
+const allContent = snapshot.val() || {};
+searchableDocs = []; // === JS: Clear search index on update (NEW) ===
+const semesterKeys = Object.keys(allContent);
+semesterKeys.sort((a, b) => { const numA = parseInt(a.replace('s', '')); const numB = parseInt(b.replace('s', '')); if (!isNaN(numA) && !isNaN(numB)) return numA - numB; return a.localeCompare(b); });
+semesterButtonsContainer.innerHTML = ''; semesterPagesContainer.innerHTML = '';
+semesterKeys.forEach(semesterKey => {
+const semesterData = allContent[semesterKey]; if (typeof semesterData !== 'object' || semesterData === null) return;
+const semesterName = semesterKey.toUpperCase(); const pageId = `content-${semesterName}`;
+const btn = document.createElement('a'); btn.href = '#'; btn.className = 'btn'; btn.textContent = semesterName; btn.onclick = (e) => { e.preventDefault(); goToPage(pageId); }; semesterButtonsContainer.appendChild(btn);
+const pageDiv = document.createElement('div'); pageDiv.className = 'content-container'; pageDiv.id = pageId; pageDiv.style.display = 'none';
+
+// === MODIFIED: Add Semester Delete Button ===
+let adminSemesterControls = '';
+if (isAdmin()) {
+adminSemesterControls = `
+<button
+class="admin-btn admin-btn-delete"
+style="display:none; position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; font-size: 1.2em; border-radius: 50%;"
+onclick="event.stopPropagation(); deleteSemester('${semesterKey}', '${semesterName}')"
+aria-label="Supprimer Semestre ${semesterName}">
+<i class="fas fa-trash"></i>
+</button>
+`;
 }
 
-/* handle scanned or manual code */
-async function handleScannedCode(scanned) {
-  if (!allowedCodesSet.has(scanned)) { message.textContent = "Code invalide ❌"; return; }
-  const codeRef = ref(db, "codes/" + scanned);
-  const snapshot = await get(codeRef);
-  const deviceId = await getDeviceFingerprint();
-  deviceIdGlobal = deviceId;
+// === MODIFICATION FOR DUA (BUTTON ONCLICK AND DIV) ===
+pageDiv.innerHTML = `
+<div style="position: relative; text-align: center;"> <h2>🇵🇸</h2>
+<h2>Semestre ${semesterName.replace('S', '')}</h2>
+${adminSemesterControls} </div>
+<div class="button-row">
+<button class="btn" onclick="returnToSelection()">RETOUR</button>
+<button class="btn btn-refresh" onclick="location.reload()">REFRESH</button>
+</div>
+<button class="myword1" onclick="window.updateDua('${semesterKey}')">سبحان الله و الحمد لله و لا اله الا الله و الله أكبر</button>
+<div id="dua-display-${semesterKey}" style="font-family: 'IBM Plex Sans Arabic', sans-serif; text-align: center; color: #aaa; margin-top: -5px; margin-bottom: 10px; min-height: 1.2em; font-size: 1.1em; font-weight: 500;"></div>
+<div id="${semesterKey}-content-area"></div>
+<h4>X</h4>`;
+// === END MODIFICATION ===
 
-  if (!snapshot.exists() || snapshot.val().usedBy === deviceId) {
-    if(!snapshot.exists()) await set(codeRef,{used:true,usedBy:deviceId,lastUsedAt:serverTimestamp()});
-    await grantAccess(scanned);
-  } else {
-    message.textContent = "❌ Ce code est utilisé depuis un autre appareil";
-  }
+semesterPagesContainer.appendChild(pageDiv);
+renderSemesterData(semesterKey, semesterData, semesterName); // === JS: Pass semesterName (MODIFIED)
+});
+// === NEW: Add Semester Button Logic ===
+// renderAdminAddSemesterButton(); // DELETED
+// === END NEW ===
+attachAccordionAccessibility(); restoreOpenAccordion();
+const savedPageId = sessionStorage.getItem('currentPageId');
+// === JS: Don't restore to search page on reload (MODIFIED) ===
+if (savedPageId && savedPageId !== 'selectionContainer' && savedPageId !== 'searchResultsContainer') {
+goToPage(savedPageId);
+} else {
+returnToSelection();
+}
+});
 }
 
-/* ---------- Presence helpers (NEW) ---------- */
-/* Ensure onDisconnect and presence monitoring via .info/connected + local handlers */
+// === JS: Accept semesterName for search indexing (MODIFIED) ===
+function renderSemesterData(semesterKey, semesterData, semesterName) {
+const container = document.getElementById(`${semesterKey}-content-area`); if (!container) return;
+container.innerHTML = ''; const emptyMsg = '<p class="no-docs-msg">Aucun document disponible pour ce semestre.</p>';
 
-async function setupPresence(deviceId){
-  try{
-    // مراقبة اتصال الـ socket مع Firebase
-    const connectedRef = ref(db, ".info/connected");
-    onValue(connectedRef, async snap => {
-      const isConnected = !!snap.val();
-      const sessionRef = ref(db, `sessions/${deviceId}`);
+// === MODIFICATION: Sort subjects by 'order' property ===
+const subjects = Object.entries(semesterData)
+.filter(([key, value]) => key !== '_placeholder' && value && typeof value === 'object')
+.map(([key, value]) => ({ key, data: value }))
+.sort((a, b) => (a.data.order || 0) - (b.data.order || 0))
+.map(item => item.key); // Get back just the keys, now sorted by order
+// === END MODIFICATION ===
 
-      if (isConnected) {
-        try{
-          // تأكد أننا نعلَن أونلاين ونسجّل onDisconnect على الخادم
-          await update(sessionRef, { online: true, lastHeartbeat: serverTimestamp() });
-
-          // onDisconnect على الخادم — في حال انقطع الاتصال فجأة
-          await onDisconnect(sessionRef).update({
-            online: false,
-            lastSeen: serverTimestamp(),
-            exitAt: serverTimestamp()
-          });
-        }catch(e){
-          console.warn("setupPresence - error setting onDisconnect/update:", e);
-        }
-      } else {
-        // لا حاجة لفعل شيء إضافي — onDisconnect سيعالج حالة الخادم
-      }
-    });
-  } catch(err){
-    console.warn("setupPresence failed:", err);
-  }
+if (subjects.length === 0) {
+container.innerHTML = emptyMsg;
+// === NEW ADMIN: Add "Add Subject" Button (even if empty) ===
+if (isAdmin()) {
+const addSubjectBtn = document.createElement('button');
+addSubjectBtn.className = 'admin-btn admin-btn-add-subject';
+addSubjectBtn.innerHTML = '<i class="fas fa-plus"></i> Ajouter une Matière';
+addSubjectBtn.onclick = () => showAddSubjectModal(semesterKey);
+container.appendChild(addSubjectBtn);
+}
+// === END NEW ADMIN ===
+return;
 }
 
-function addRobustVisibilityHandlers(deviceId){
-  // visibilitychange : سريع لإرسال أوفلاين وقت الاختفاء
-  document.addEventListener('visibilitychange', () => {
-    if (!localStorage.getItem("qr_code_value")) return;
-    if (document.visibilityState === 'visible') {
-      updateSessionOnline();
-    } else {
-      updateSessionOffline();
-    }
-  });
+subjects.forEach(subjectKey => {
+// if (subjectKey === '_placeholder') return; // Already filtered
+const subjectData = semesterData[subjectKey] || {}; const panelId = `${semesterKey}-${subjectKey}-panel`;
 
-  // pagehide : يعمل جيداً على الهواتف عند إغلاق التبويب/التطبيق
-  window.addEventListener('pagehide', () => {
-    if (!localStorage.getItem("qr_code_value")) return;
-    updateSessionOffline();
-  }, {passive:true});
+// === MODIFICATION: Use subjectData.name for display name ===
+let subjectName;
+if (subjectData.name) { // Check for display name
+subjectName = subjectData.name;
+} else if ((semesterKey === 's2' || semesterKey === 's3') && subjectKey === 'materials') {
+subjectName = 'Général';
+} else {
+subjectName = subjectKey.charAt(0).toUpperCase() + subjectKey.slice(1);
+}
+// === END MODIFICATION ===
 
-  // blur : قد يحدث عند رجوع التطبيق للخلفية (Android WebView / Chrome)
-  window.addEventListener('blur', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+const section = document.createElement('div'); section.className = 'subject-section';
+section.dataset.subjectKey = subjectKey; // === NEW: Add key for drag/drop ===
 
-  // freeze : Page Lifecycle API (بعض المتصفحات)
-  document.addEventListener('freeze', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+const title = document.createElement('h3'); title.onclick = () => togglePdfList(panelId); title.dataset.accId = panelId; title.setAttribute('aria-controls', panelId); title.setAttribute('aria-expanded', 'false');
 
-  // beforeunload / unload كنسخة احتياطية
-  window.addEventListener('beforeunload', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
-  window.addEventListener('unload', () => { if (localStorage.getItem("qr_code_value")) updateSessionOffline(); });
+const titleText = document.createElement('span');
+titleText.textContent = `${subjectName} `;
+title.appendChild(titleText);
 
-  // Cordova/Capacitor events (إن وُجدت)
-  window.addEventListener('resume', () => { updateSessionOnline(); });
-  window.addEventListener('pause', () => { updateSessionOffline(); });
+// === NEW ADMIN: Add Subject Admin Buttons ===
+if (isAdmin()) {
+const adminControls = document.createElement('span');
+adminControls.className = 'subject-admin-controls';
+// === MODIFICATION: Update showEditSubjectModal call ===
+adminControls.innerHTML = `
+<button class="admin-btn admin-btn-edit" onclick="event.stopPropagation(); showEditSubjectModal('${semesterKey}', '${subjectKey}', '${escapeHtml(subjectData.name || '')}', '${escapeHtml(subjectData.comment || '')}')" aria-label="Modifier ${subjectName}"><i class="fas fa-edit"></i></button>
+<button class="admin-btn admin-btn-delete" onclick="event.stopPropagation(); deleteSubject('${semesterKey}', '${subjectKey}', '${subjectName}')" aria-label="Supprimer ${subjectName}"><i class="fas fa-trash"></i></button>
+`;
+// === END MODIFICATION ===
+title.appendChild(adminControls);
+}
+// === END NEW ADMIN ===
+
+title.innerHTML += `<span class="icon">▼</span>`; // Add icon at the end
+
+const panel = document.createElement('div'); panel.className = 'pdf-panel'; panel.id = panelId; panel.setAttribute('aria-hidden', 'true');
+let totalPdfsFound = 0;
+if (subjectData.comment) { const commentEl = document.createElement('div'); commentEl.className = 'subject-comment'; commentEl.textContent = subjectData.comment; panel.appendChild(commentEl); }
+
+// === JS: Helper function (MODIFIED to accept names for indexing) ===
+const renderGrid = (gridTitleText, data, currentSubjectName, currentSemesterName) => {
+const pdfKeys = data ? Object.keys(data) : [];
+const sortedPdfItems = pdfKeys.map(key => ({ key: parseInt(key), data: data[key] })).filter(item => !isNaN(item.key) && item.data && item.data.name && item.data.url).sort((a, b) => a.key - b.key);
+
+// === NEW: Filter PDFs based on visibility ===
+const visiblePdfItems = sortedPdfItems.filter(item => isPdfVisible(item.data.visibility, currentUserCode));
+// === END NEW ===
+
+// === NEW ADMIN: Determine type (normal, special, legacy)
+const type = (gridTitleText === "Additions") ? 'special' : (gridTitleText.includes("Ancien")) ? 'legacy' : 'normal';
+
+// === MODIFIED: Use visiblePdfItems ===
+if (visiblePdfItems.length > 0) {
+totalPdfsFound += visiblePdfItems.length;
+const gridTitle = document.createElement('h4'); gridTitle.className = 'pdf-grid-title'; gridTitle.textContent = gridTitleText; panel.appendChild(gridTitle);
 }
 
-/* grant access */
+// === NEW ADMIN: Add "Add PDF" button ===
+if (isAdmin()) {
+const addPdfBtn = document.createElement('button');
+addPdfBtn.className = 'admin-btn admin-btn-add';
+addPdfBtn.innerHTML = `<i class="fas fa-plus"></i> Ajouter à "${gridTitleText}"`;
+addPdfBtn.onclick = (e) => { e.stopPropagation(); showAddPdfModal(semesterKey, subjectKey, type); };
+panel.appendChild(addPdfBtn);
+}
+// === END NEW ADMIN ===
+
+// === MODIFIED: Use visiblePdfItems ===
+if (visiblePdfItems.length === 0) return; // Don't create grid if no items
+
+const grid = document.createElement('div'); grid.className = 'pdf-grid';
+// === MODIFIED: Use visiblePdfItems ===
+visiblePdfItems.forEach(item => {
+const pdf = item.data;
+const driveId = getDriveFileId(pdf.url); // Calculate once
+const embedUrl = pdf.url.includes('embedded=true') ? pdf.url : (pdf.url.includes('/preview') ? pdf.url : (pdf.url.replace('/view', '/preview') + '?embedded=true'));
+
+// === NEW: Create the FULL data object ===
+const fullPdfData = {
+name: pdf.name || "",
+description: pdf.description || "",
+url: pdf.url || "",
+imageUrl: pdf.imageUrl || null,
+visibility: pdf.visibility || 'public', // === NEW: Pass visibility
+uploadedAt: pdf.uploadedAt || null,
+uploadedBy: pdf.uploadedBy || null,
+lastUpdatedAt: pdf.lastUpdatedAt || null,
+lastUpdatedBy: pdf.lastUpdatedBy || null,
+driveId: driveId,
+subject: currentSubjectName,
+semester: currentSemesterName
+};
+
+// === JS: ADD TO SEARCH INDEX (MODIFIED) ===
+// Add to search index *before* visibility filter, so admins can find hidden files?
+// No, the student-side search should only find what the student can see.
+// This is already filtered, so searchableDocs will only contain visible items.
+searchableDocs.push(fullPdfData);
+
+const pdfBox = document.createElement('div');
+pdfBox.className = 'pdf-box';
+pdfBox.dataset.pdfKey = item.key; // === NEW: Add key for drag/drop
+
+// --- Image Thumbnail ---
+const thumbnailDiv = document.createElement('div');
+thumbnailDiv.className = 'pdf-thumbnail';
+
+// === MODIFIED: Thumbnail Rendering (Higher Quality) ===
+if (fullPdfData.imageUrl) {
+const imgEl = document.createElement('img');
+imgEl.decoding = 'async'; imgEl.loading = 'lazy';
+imgEl.alt = `Preview of ${fullPdfData.name}`; imgEl.src = fullPdfData.imageUrl;
+imgEl.addEventListener('error', () => { thumbnailDiv.innerHTML = '<div class="icon-placeholder"><i class="fa-regular fa-file-pdf"></i></div>'; });
+thumbnailDiv.appendChild(imgEl);
+} else if (fullPdfData.driveId) {
+const imgEl = document.createElement('img');
+imgEl.decoding = 'async'; imgEl.loading = 'lazy';
+imgEl.alt = `Preview of ${fullPdfData.name}`;
+imgEl.src = buildDriveThumbnailUrl(fullPdfData.driveId, 800);
+imgEl.srcset = `${buildDriveThumbnailUrl(fullPdfData.driveId, 400)} 400w, ${buildDriveThumbnailUrl(fullPdfData.driveId, 800)} 800w, ${buildDriveThumbnailUrl(fullPdfData.driveId, 1200)} 1200w`;
+imgEl.sizes = `(max-width: 600px) 55px, 60px`;
+imgEl.addEventListener('error', () => { thumbnailDiv.innerHTML = '<div class="icon-placeholder"><i class="fa-regular fa-file-pdf"></i></div>'; });
+thumbnailDiv.appendChild(imgEl);
+} else {
+thumbnailDiv.innerHTML = '<div class="icon-placeholder"><i class="fa-regular fa-file-pdf"></i></div>';
+}
+// === END MODIFIED Thumbnail ===
+
+// --- PDF INFO (Name, Desc, Date) ---
+const infoDiv = document.createElement('div');
+infoDiv.className = 'pdf-info';
+const nameElement = document.createElement('strong');
+nameElement.textContent = fullPdfData.name || "(No Name)";
+infoDiv.appendChild(nameElement);
+if (fullPdfData.description) {
+const descElement = document.createElement('small');
+descElement.className = 'pdf-description';
+descElement.textContent = fullPdfData.description;
+descElement.title = fullPdfData.description;
+infoDiv.appendChild(descElement);
+}
+
+// === NEW: Display Uploader (No Star) ===
+if (fullPdfData.uploadedBy) {
+const displayUploadedBy = fullPdfData.uploadedBy; // Display name directly
+const uploaderElement = document.createElement('small');
+uploaderElement.className = 'pdf-meta';
+uploaderElement.textContent = `Ajt: ${displayUploadedBy}`;
+infoDiv.appendChild(uploaderElement);
+}
+// === END NEW ===
+
+// --- Container for Buttons ---
+const buttonsDiv = document.createElement('div');
+buttonsDiv.className = 'pdf-buttons';
+
+
+// --- Details Button ---
+const detailsButton = document.createElement('button');
+detailsButton.className = 'pdf-details-btn admin-btn';
+detailsButton.innerHTML = '<i class="fas fa-info-circle"></i>';
+detailsButton.setAttribute('aria-label', `Détails pour ${escapeHtml(fullPdfData.name)}`);
+detailsButton.onclick = (e) => {
+e.stopPropagation();
+showDetailsPopup(fullPdfData);
+};
+detailsButton.addEventListener('keydown', (e) => {
+if(e.key === 'Enter' || e.key === ' ') {
+e.preventDefault(); e.stopPropagation();
+showDetailsPopup(fullPdfData);
+}
+});
+
+// --- Append elements ---
+pdfBox.appendChild(thumbnailDiv);
+pdfBox.appendChild(infoDiv);
+
+// --- Append buttons to their container ---
+if (isAdmin()) {
+// Add Drag Handle
+const dragHandle = document.createElement('button');
+dragHandle.className = 'admin-btn pdf-drag-handle';
+dragHandle.innerHTML = '<i class="fas fa-grip-vertical"></i>';
+dragHandle.setAttribute('aria-label', `Réorganiser ${escapeHtml(fullPdfData.name)}`);
+dragHandle.onclick = (e) => { e.stopPropagation(); };
+dragHandle.onmousedown = (e) => e.stopPropagation();
+buttonsDiv.appendChild(dragHandle);
+
+// Edit Button
+const editButton = document.createElement('button');
+editButton.className = 'admin-btn admin-btn-edit';
+editButton.innerHTML = '<i class="fas fa-edit"></i>';
+editButton.setAttribute('aria-label', `Modifier ${escapeHtml(fullPdfData.name)}`);
+editButton.onclick = (e) => { e.stopPropagation(); showEditPdfModal(semesterKey, subjectKey, type, item.key, fullPdfData); };
+buttonsDiv.appendChild(editButton);
+
+// Delete Button
+const deleteButton = document.createElement('button');
+deleteButton.className = 'admin-btn admin-btn-delete';
+deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+deleteButton.setAttribute('aria-label', `Supprimer ${escapeHtml(fullPdfData.name)}`);
+deleteButton.onclick = (e) => { e.stopPropagation(); deletePdf(semesterKey, subjectKey, type, item.key, fullPdfData.name); };
+buttonsDiv.appendChild(deleteButton);
+}
+buttonsDiv.appendChild(detailsButton); // Add details button last
+
+pdfBox.appendChild(buttonsDiv); // Append the whole button container
+
+// --- Click Handlers (for PDF Box) ---
+const ariaLabel = `Open PDF: ${escapeHtml(fullPdfData.name)}. ${fullPdfData.description ? escapeHtml(fullPdfData.description) : ''}`;
+pdfBox.setAttribute('aria-label', ariaLabel);
+pdfBox.onclick = () => openPDF(embedUrl);
+pdfBox.setAttribute('role', 'button');
+pdfBox.setAttribute('tabindex', '0');
+pdfBox.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPDF(embedUrl); } });
+
+// --- Click Handlers (for Thumbnail) ---
+const firstChild = thumbnailDiv.querySelector('img');
+if (firstChild) {
+let previewSrc = firstChild.src;
+if (fullPdfData.driveId) {
+previewSrc = buildDriveThumbnailUrl(fullPdfData.driveId, 1600);
+} else if(fullPdfData.imageUrl) {
+previewSrc = fullPdfData.imageUrl;
+}
+
+thumbnailDiv.onclick = (e) => { e.stopPropagation(); openImagePreview(previewSrc); };
+thumbnailDiv.setAttribute('role', 'button');
+thumbnailDiv.setAttribute('aria-label', `Preview image for ${escapeHtml(fullPdfData.name)}`);
+thumbnailDiv.setAttribute('tabindex', '0');
+thumbnailDiv.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); openImagePreview(previewSrc); } });
+}
+
+grid.appendChild(pdfBox);
+});
+panel.appendChild(grid);
+
+// === NEW: Initialize SortableJS for PDFs ===
+// === MODIFIED: Check visiblePdfItems.length > 0 ===
+if (isAdmin() && visiblePdfItems.length > 0) {
+grid.classList.add("admin-sortable-grid");
+grid.dataset.path = `content/${semesterKey}/${subjectKey}/${type}`;
+
+if (grid.sortableInstance) {
+grid.sortableInstance.destroy();
+}
+
+grid.sortableInstance = new Sortable(grid, {
+animation: 150,
+ghostClass: 'sortable-ghost',
+handle: '.pdf-drag-handle',
+onEnd: window.handleDragEnd
+});
+}
+// === END NEW ===
+};
+
+const specialData = subjectData.special || {}; const normalData = subjectData.normal || {}; const legacyData = {};
+Object.keys(subjectData).forEach(key => { if (!isNaN(parseInt(key))) { legacyData[key] = subjectData[key]; } });
+
+renderGrid("Fichiers", normalData, subjectName, semesterName);
+renderGrid("Additions", specialData, subjectName, semesterName);
+
+
+if(Object.keys(legacyData).length > 0) renderGrid("Fichiers (Ancien)", legacyData, subjectName, semesterName);
+
+if (totalPdfsFound === 0 && !subjectData.comment) {
+if (!isAdmin()) {
+panel.innerHTML += '<p class="no-docs-msg">Aucun document disponible.</p>';
+}
+}
+section.appendChild(title); section.appendChild(panel); container.appendChild(section);
+});
+
+// === NEW ADMIN: Add "Add Subject" Button ===
+if (isAdmin()) {
+const addSubjectBtn = document.createElement('button');
+addSubjectBtn.className = 'admin-btn admin-btn-add-subject';
+addSubjectBtn.innerHTML = '<i class="fas fa-plus"></i> Ajouter une Matière';
+addSubjectBtn.onclick = () => showAddSubjectModal(semesterKey);
+container.appendChild(addSubjectBtn);
+}
+// === END NEW ADMIN ===
+
+if (container.children.length === 0) container.innerHTML = emptyMsg;
+}
+
+function restoreOpenAccordion() { /* Unchanged */ const openAccordionId = sessionStorage.getItem('openAccordionId'); if (!openAccordionId) return; try { const pdfPanel = document.getElementById(openAccordionId); const title = document.querySelector(`[data-acc-id="${openAccordionId}"]`); if (pdfPanel && title && !pdfPanel.classList.contains('open')) { pdfPanel.classList.add('open'); pdfPanel.setAttribute('aria-hidden','false'); title.setAttribute('aria-expanded','true'); const icon = title.querySelector('span.icon'); if (icon) icon.textContent = '▲'; } } catch (e) { console.warn("Failed to restore accordion:", e); sessionStorage.removeItem('openAccordionId'); } }
+/* ---------- END JS MODIFICATION ---------- */
+
+/* === grant access (MODIFIED FOR ADMIN & WELCOME) === */
 async function grantAccess(scanned) {
-  message.textContent="Vérifié avec succès ✅";
-  stopCamera();
-  const deviceId = await getDeviceFingerprint();
-  deviceIdGlobal=deviceId;
-  const deviceName=getDeviceName();
-  const location=await getLocation();
+message.textContent="Vérifié avec succès ✅";
+stopCamera();
+const deviceId = await getDeviceFingerprint();
+deviceIdGlobal=deviceId;
+const deviceName=getDeviceName();
+const location=await getLocation();
+const sessionRef=ref(db,`sessions/${deviceId}`);
+const sessionData={ code:scanned, deviceName, location:location||null, enteredAt:serverTimestamp(), online:true, lastSeen:null, lastHeartbeat:serverTimestamp(), exitAt:null };
 
-  const sessionRef=ref(db,`sessions/${deviceId}`);
+// === NEW: Set current user code ===
+currentUserCode = scanned;
+// === END NEW ===
 
-  const sessionData={
-      code:scanned,
-      deviceName,
-      location:location||null,
-      enteredAt:serverTimestamp(),
-      online:true,
-      lastSeen:null,
-      lastHeartbeat:serverTimestamp(),
-      exitAt:null
-  };
-
-  try {
-    const visitorRef=ref(db,`visitors/${deviceId}`);
-    const visitorSnap=await get(visitorRef);
-
-    // write session
-    await set(sessionRef,sessionData);
-
-    // onDisconnect: احتياطي على الخادم في حال انقطع الاتصال فجأة
-    await onDisconnect(sessionRef).update({
-        online:false,
-        lastSeen:serverTimestamp(),
-        exitAt:serverTimestamp()
-    });
-
-    // update code usage
-    await update(ref(db,`codes/${scanned}`),{used:true,usedBy:deviceId,lastUsedAt:serverTimestamp()});
-
-    if(!visitorSnap.exists()){
-        await set(visitorRef,{firstSeen:serverTimestamp(),deviceName});
-        const totalRef=ref(db,`counters/totalVisitors`);
-        await runTransaction(totalRef,current=>(current||0)+1);
-    } else {
-        await update(visitorRef,{lastSeen:serverTimestamp(),deviceName});
-    }
-
-    localStorage.setItem("qr_access_granted","true");
-    localStorage.setItem("qr_code_value",scanned);
-    sessionStorage.setItem('currentPageId', 'selectionContainer');
-
-    // === NEW: إعداد الحضور (onDisconnect + مراقبة .info/connected) و مستمعي الصفحة ===
-    try{
-      setupPresence(deviceId);                // يضمن onDisconnect و update على الخادم
-      addRobustVisibilityHandlers(deviceId);  // يضيف مستمعين محليين لإرسال أوفلاين فوراً
-    }catch(e){ console.warn("Presence setup failed:", e); }
-    // === end NEW ===
-
-    setTimeout(()=>{
-      overlay.classList.remove("show");
-      overlay.style.display = "none";
-      content.style.display="flex";
-      startRealtimeSessionWatcher();
-      startHeartbeat(deviceId);
-    },800);
-  } catch(err){ console.error("grantAccess error:",err); message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى."; }
+// Check Admin Privileges
+try {
+const adminSnap = await get(ref(db, `adminUsers/${scanned}`));
+if (adminSnap.exists()) {
+localStorage.setItem("isAdmin", "true");
+localStorage.setItem("adminName", adminSnap.val().name || "Admin");
+adminSettingsBtn.style.display = 'block';
+} else {
+localStorage.removeItem("isAdmin");
+localStorage.removeItem("adminName");
+adminSettingsBtn.style.display = 'none';
+}
+} catch (e) {
+console.warn("Admin check failed:", e);
+localStorage.removeItem("isAdmin");
+localStorage.removeItem("adminName");
+adminSettingsBtn.style.display = 'none';
 }
 
-/* heartbeat */
-function startHeartbeat(deviceId){
-  if(heartbeatIntervalId) clearInterval(heartbeatIntervalId);
-  heartbeatIntervalId=setInterval(async()=>{
-    try{
-      if (document.hidden) {
-        stopHeartbeat();
-        updateSessionOffline();
-        return;
-      }
-      await update(ref(db,`sessions/${deviceId}`),{lastHeartbeat:serverTimestamp(),online:true});
-    }catch(e){console.warn("Heartbeat failed:",e);}
-  },1000);
+// Set Welcome Message
+const welcomeMsgEl = document.getElementById('welcomeMessage');
+if (isAdmin()) {
+const adminName = localStorage.getItem("adminName") || "Admin";
+// === NEW: Add star emoji ===
+welcomeMsgEl.textContent = `Welcome, ⭐ ${escapeHtml(adminName)} 👋`;
+} else {
+welcomeMsgEl.textContent = `Welcome, ${escapeHtml(scanned)} 👋`;
 }
+
+try {
+const visitorRef=ref(db,`visitors/${deviceId}`);
+const visitorSnap=await get(visitorRef);
+await set(sessionRef,sessionData);
+await onDisconnect(sessionRef).update({ online:false, lastSeen:serverTimestamp(), exitAt:serverTimestamp() });
+await update(ref(db,`codes/${scanned}`),{used:true,usedBy:deviceId,lastUsedAt:serverTimestamp()});
+if(!visitorSnap.exists()){
+await set(visitorRef,{firstSeen:serverTimestamp(),deviceName});
+const totalRef=ref(db,`counters/totalVisitors`);
+await runTransaction(totalRef,current=>(current||0)+1);
+} else {
+await update(visitorRef,{lastSeen:serverTimestamp(),deviceName});
+}
+localStorage.setItem("qr_access_granted","true");
+localStorage.setItem("qr_code_value",scanned);
+sessionStorage.setItem('currentPageId', 'selectionContainer');
+try{ setupPresence(deviceId); addRobustVisibilityHandlers(deviceId); } catch(e){ console.warn("Presence setup failed:", e); }
+setTimeout(()=>{
+overlay.classList.remove("show");
+overlay.style.display = "none";
+content.style.display="flex";
+// renderAdminAddSemesterButton(); // DELETED
+startRealtimeSessionWatcher();
+startHeartbeat(deviceId);
+startContentWatchers();
+// === DELETED: startNotificationWatcher(currentUserCode); ===
+},800);
+} catch(err){
+console.error("grantAccess error:",err);
+message.textContent="خطأ في تخزين الجلسة. حاول مرة أخرى.";
+}
+}
+
+/* heartbeat (unchanged) */
+function startHeartbeat(deviceId){ if(heartbeatIntervalId) clearInterval(heartbeatIntervalId); heartbeatIntervalId=setInterval(async()=>{ try{ if (document.hidden) { stopHeartbeat(); updateSessionOffline(); return; } await update(ref(db,`sessions/${deviceId}`),{lastHeartbeat:serverTimestamp(),online:true}); }catch(e){console.warn("Heartbeat failed:",e);} },1000); }
 function stopHeartbeat(){ if(heartbeatIntervalId) clearInterval(heartbeatIntervalId); heartbeatIntervalId=null; }
 
-/* realtime session watcher */
+/* === MODIFIED: realtime session watcher (use custom alerts) === */
 async function startRealtimeSessionWatcher(){
-  const savedCode=localStorage.getItem("qr_code_value");
-  if(!savedCode) return;
-  const deviceId = await getDeviceFingerprint();
-  const codeRef=ref(db,"codes/"+savedCode);
-  onValue(codeRef, snap=>{
-    if(!snap.exists() || snap.val().usedBy!==deviceId){
-      stopCamera(); overlay.style.display="flex"; overlay.classList.add("show"); content.style.display="none";
-      sessionPopup.style.display="flex";
-      localStorage.removeItem("qr_access_granted");
-      localStorage.removeItem("qr_code_value");
-      sessionStorage.removeItem('currentPageId');
-      sessionStorage.removeItem('openAccordionId');
-      sessionStorage.removeItem('openPdfUrl');
-      stopHeartbeat();
-      updateSessionOffline();
-    }
-  });
+const savedCode=localStorage.getItem("qr_code_value");
+if(!savedCode) return;
+const deviceId = await getDeviceFingerprint();
+
+// Watch the code status
+const codeRef=ref(db,"codes/"+savedCode);
+onValue(codeRef, snap=>{
+if(!snap.exists() || snap.val().usedBy!==deviceId){
+triggerLogout();
+}
+});
+
+// Watch admin status
+const adminRef = ref(db, "adminUsers/" + savedCode);
+onValue(adminRef, async snap => { // <-- Made async
+const welcomeMsgEl = document.getElementById('welcomeMessage'); // Get welcome message element
+
+if (!snap.exists() && isAdmin()) {
+// Admin privileges were revoked
+localStorage.removeItem("isAdmin");
+localStorage.removeItem("adminName");
+adminSettingsBtn.style.display = 'none';
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Vos privilèges d'administrateur ont été révoqués. Rechargement de la page.");
+location.reload(); // Reload needed to update UI correctly
+} else if (snap.exists() && !isAdmin()) {
+// Admin privileges were granted
+localStorage.setItem("isAdmin", "true");
+localStorage.setItem("adminName", snap.val().name || "Admin");
+adminSettingsBtn.style.display = 'block';
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Vous avez reçu des privilèges d'administrateur. Rechargement de la page.");
+location.reload(); // Reload needed to update UI correctly
+} else if (snap.exists() && isAdmin()) {
+// Maybe admin name changed? Update it.
+const newName = snap.val().name || "Admin";
+if (localStorage.getItem("adminName") !== newName) {
+localStorage.setItem("adminName", newName);
+// === NEW: Update welcome message with star emoji ===
+if (welcomeMsgEl) welcomeMsgEl.textContent = `Welcome, ⭐ ${escapeHtml(newName)} 👋`;
+}
+}
+});
 }
 
-/* popup */
+// === NEW: Logout Function (unchanged from previous) ===
+function triggerLogout() {
+stopCamera();
+overlay.style.display="flex";
+overlay.classList.add("show");
+content.style.display="none";
+sessionPopup.style.display="flex";
+localStorage.removeItem("qr_access_granted");
+localStorage.removeItem("qr_code_value");
+localStorage.removeItem("isAdmin");
+localStorage.removeItem("adminName");
+adminSettingsBtn.style.display = 'none';
+document.getElementById('welcomeMessage').textContent = '';
+sessionStorage.removeItem('currentPageId');
+sessionStorage.removeItem('openAccordionId');
+sessionStorage.removeItem('openPdfUrl');
+stopHeartbeat();
+updateSessionOffline();
+// === NEW: Clear current user code on logout ===
+currentUserCode = null;
+}
+
+/* popup (unchanged) */
 popupBtn.onclick=()=> location.reload();
 
-/* init */
+/* === init (MODIFIED FOR ADMIN & WELCOME) === */
 (async()=>{
-  loader.style.display = "flex";
-  const deviceId = await getDeviceFingerprint();
-  deviceIdGlobal = deviceId;
-  startAllowedCodesWatcher();
+loader.style.display = "flex";
+const deviceId = await getDeviceFingerprint();
+deviceIdGlobal = deviceId;
+startAllowedCodesWatcher();
+startAdminNamesWatcher(); // Start admin name watcher
+const savedCode = localStorage.getItem("qr_code_value");
+let sessionIsValid = false;
 
-  const savedCode = localStorage.getItem("qr_code_value");
-  let sessionIsValid = false;
+if (savedCode) {
+try {
+const snap = await get(ref(db, "codes/" + savedCode));
+if (snap.exists() && snap.val().usedBy === deviceId) {
+sessionIsValid = true;
+// === NEW: Set current user code ===
+currentUserCode = savedCode;
+// === END NEW ===
 
-  if (savedCode) {
-    try {
-      const snap = await get(ref(db, "codes/" + savedCode));
-      if (snap.exists() && snap.val().usedBy === deviceId) {
-        sessionIsValid = true;
-      }
-    } catch (e) {
-      console.error("Error checking saved session:", e);
-      sessionIsValid = false;
-    }
-  }
+// Re-check admin status on load
+const adminSnap = await get(ref(db, `adminUsers/${savedCode}`));
+if (adminSnap.exists()) {
+localStorage.setItem("isAdmin", "true");
+localStorage.setItem("adminName", adminSnap.val().name || "Admin");
+adminSettingsBtn.style.display = 'block';
+} else {
+localStorage.removeItem("isAdmin");
+localStorage.removeItem("adminName");
+adminSettingsBtn.style.display = 'none';
+}
 
-  loader.style.display = "none";
+// Set Welcome Message
+const welcomeMsgEl = document.getElementById('welcomeMessage');
+if (isAdmin()) {
+const adminName = localStorage.getItem("adminName") || "Admin";
+// === NEW: Add star emoji ===
+welcomeMsgEl.textContent = `Welcome, ⭐ ${escapeHtml(adminName)} 👋`;
+} else {
+const userCode = localStorage.getItem("qr_code_value") || "User";
+welcomeMsgEl.textContent = `Welcome, ${escapeHtml(userCode)} 👋`;
+}
 
-  if (sessionIsValid) {
-    overlay.classList.remove("show");
-    overlay.style.display = "none";
-    content.style.display = "flex";
+}
+} catch (e) {
+console.error("Error checking saved session:", e);
+sessionIsValid = false;
+}
+}
 
-    const savedPageId = sessionStorage.getItem('currentPageId');
-    if (savedPageId && savedPageId !== 'selectionContainer') {
-      goToPage(savedPageId);
-      if (savedPageId === 'contentS1') {
-        const openAccordionId = sessionStorage.getItem('openAccordionId');
-        if (openAccordionId) {
-          try {
-            const pdfList = document.getElementById(openAccordionId);
-            const title = document.querySelector(`[data-acc-id="${openAccordionId}"]`);
-            if (pdfList) {
-              pdfList.classList.add('open');
-              pdfList.setAttribute('aria-hidden','false');
-            }
-            if (title) {
-              title.setAttribute('aria-expanded','true');
-              const icon = title.querySelector('span.icon');
-              if (icon) icon.textContent = '▲';
-            }
-          } catch (e) {
-            console.warn("Failed to restore accordion:", e);
-            sessionStorage.removeItem('openAccordionId');
-          }
-        }
-      }
-    } else {
-      returnToSelection();
-    }
-
-    const openPdfUrl = sessionStorage.getItem('openPdfUrl');
-    if (openPdfUrl) openPDF(openPdfUrl);
-
-    // Ensure presence watchers are active after reload
-    try{
-      setupPresence(deviceId);
-      addRobustVisibilityHandlers(deviceId);
-    }catch(e){ console.warn("Presence re-setup failed:", e); }
-
-    startRealtimeSessionWatcher();
-    if (!document.hidden) {
-      startHeartbeat(deviceId);
-      updateSessionOnline();
-    } else updateSessionOffline();
-  } else {
-    localStorage.removeItem("qr_access_granted");
-    localStorage.removeItem("qr_code_value");
-    sessionStorage.removeItem('currentPageId');
-    sessionStorage.removeItem('openAccordionId');
-    sessionStorage.removeItem('openPdfUrl');
-
-    overlay.style.display = "flex";
-    overlay.classList.add("show");
-    startCamera();
-  }
-
-  // accessibility: attach keyboard controls to all accordion headers
-  attachAccordionAccessibility();
+loader.style.display = "none";
+if (sessionIsValid) {
+overlay.classList.remove("show");
+overlay.style.display = "none";
+content.style.display = "flex";
+// renderAdminAddSemesterButton(); // DELETED
+const openPdfUrl = sessionStorage.getItem('openPdfUrl');
+if (openPdfUrl) openPDF(openPdfUrl);
+try{ setupPresence(deviceId); addRobustVisibilityHandlers(deviceId); } catch(e){ console.warn("Presence re-setup failed:", e); }
+startRealtimeSessionWatcher();
+startContentWatchers();
+// === DELETED: startNotificationWatcher(currentUserCode); ===
+if (!document.hidden) {
+startHeartbeat(deviceId);
+updateSessionOnline();
+} else updateSessionOffline();
+} else {
+localStorage.removeItem("qr_access_granted");
+localStorage.removeItem("qr_code_value");
+localStorage.removeItem("isAdmin");
+localStorage.removeItem("adminName");
+adminSettingsBtn.style.display = 'none';
+document.getElementById('welcomeMessage').textContent = '';
+sessionStorage.removeItem('currentPageId');
+sessionStorage.removeItem('openAccordionId');
+sessionStorage.removeItem('openPdfUrl');
+// === NEW: Clear user code on failed init ===
+currentUserCode = null;
+overlay.style.display = "flex";
+overlay.classList.add("show");
+startCamera();
+}
 })();
 
-/* navigation */
+/* navigation (MODIFIED FOR SEARCH & DUA) */
 window.goToPage=function(pageId){
-  document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
-  document.getElementById('selectionContainer').style.display='none';
-  document.getElementById(pageId).style.display='block';
-  sessionStorage.setItem('currentPageId', pageId);
+selectionContainer.style.display='none'; // Use variable
+searchResultsContainer.style.display = 'none'; // === JS: Hide search (NEW)
+Array.from(semesterPagesContainer.children).forEach(c => { if (c.classList.contains('content-container')) c.style.display = 'none'; });
+const targetPage = document.getElementById(pageId);
+if (targetPage) {
+targetPage.style.display = 'block';
+// === NEW: Update dua when page is shown ===
+const semesterKey = pageId.replace('content-', '').toLowerCase(); // e.g., 'content-S1' -> 's1'
+if (pageId.startsWith('content-')) {
+window.updateDua(semesterKey);
+}
+// === END NEW ===
+}
+sessionStorage.setItem('currentPageId', pageId);
 };
 window.returnToSelection=function(){
-  document.querySelectorAll('.content-container').forEach(c=>c.style.display='none');
-  document.getElementById('selectionContainer').style.display='block';
-  sessionStorage.setItem('currentPageId', 'selectionContainer');
-  sessionStorage.removeItem('openAccordionId');
+Array.from(semesterPagesContainer.children).forEach(c => { if (c.classList.contains('content-container')) c.style.display = 'none'; });
+searchResultsContainer.style.display = 'none'; // === JS: Hide search (NEW)
+selectionContainer.style.display='block'; // Use variable
+sessionStorage.setItem('currentPageId', 'selectionContainer');
+sessionStorage.removeItem('openAccordionId');
+// searchInput.value = ''; // Don't clear search on return
 };
 
-/* Accordion toggle (keeps single-open behavior, updates aria & session) */
-window.togglePdfList = function(id) {
-  const allPdfLists = document.querySelectorAll('#contentS1 .pdf-grid');
-  const allTitles = document.querySelectorAll('#contentS1 .subject-section h3');
+/* Accordion toggle (unchanged) */
+window.togglePdfList = function(id) { const allPdfPanels = document.querySelectorAll('.pdf-panel'); const allTitles = document.querySelectorAll('.subject-section h3'); const pdfPanel = document.getElementById(id); if (!pdfPanel) return; const title = document.querySelector(`[data-acc-id="${id}"]`); const icon = title ? title.querySelector('span.icon') : null; const isOpening = !pdfPanel.classList.contains('open'); allPdfPanels.forEach(panel => { panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }); allTitles.forEach(t => { t.setAttribute('aria-expanded','false'); const s = t.querySelector('span.icon'); if (s) s.textContent = "▼"; }); if (isOpening) { pdfPanel.classList.add('open'); pdfPanel.setAttribute('aria-hidden','false'); if (icon) icon.textContent = "▲"; if (title) title.setAttribute('aria-expanded','true'); sessionStorage.setItem('openAccordionId', id); } else { sessionStorage.removeItem('openAccordionId'); } };
 
-  const pdfList = document.getElementById(id);
-  if (!pdfList) return;
+/* attach keyboard accessibility (unchanged) */
+function attachAccordionAccessibility(){ const headers = document.querySelectorAll('.subject-section h3:not([data-keyboard-attached])'); headers.forEach(h => { h.dataset.keyboardAttached = 'true'; h.setAttribute('role','button'); if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex','0'); if (!h.hasAttribute('aria-expanded')) h.setAttribute('aria-expanded','false'); h.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') { ev.preventDefault(); const id = h.getAttribute('data-acc-id'); if (id) togglePdfList(id); } }); }); }
 
-  const title = document.querySelector(`[data-acc-id="${id}"]`);
-  const icon = title ? title.querySelector('span.icon') : null;
-
-  const isOpening = !pdfList.classList.contains('open');
-
-  // close all
-  allPdfLists.forEach(list => {
-    list.classList.remove('open');
-    list.setAttribute('aria-hidden','true');
-  });
-  allTitles.forEach(t => {
-    t.setAttribute('aria-expanded','false');
-    const s = t.querySelector('span.icon');
-    if (s) s.textContent = "▼";
-  });
-
-  if (isOpening) {
-    pdfList.classList.add('open');
-    pdfList.setAttribute('aria-hidden','false');
-    if (icon) icon.textContent = "▲";
-    if (title) title.setAttribute('aria-expanded','true');
-    sessionStorage.setItem('openAccordionId', id);
-  } else {
-    sessionStorage.removeItem('openAccordionId');
-  }
-};
-
-/* attach keyboard accessibility to accordion headers */
-function attachAccordionAccessibility(){
-  const headers = document.querySelectorAll('#contentS1 .subject-section h3');
-  headers.forEach(h => {
-    h.setAttribute('role','button');
-    if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex','0');
-    if (!h.hasAttribute('aria-expanded')) h.setAttribute('aria-expanded','false');
-
-    // keyboard: Enter or Space toggles
-    h.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
-        ev.preventDefault();
-        const id = h.getAttribute('data-acc-id');
-        if (id) togglePdfList(id);
-      }
-    });
-
-    // also clicking sets aria automatically via togglePdfList
-  });
-}
-
-/* session updates when leaving/returning */
-async function updateSessionOffline(){
-  try{
-    const deviceId=deviceIdGlobal||localStorage.getItem("deviceId");
-    if(deviceId) {
-      const sessionRef = ref(db, `sessions/${deviceId}`);
-      const snap = await get(sessionRef);
-      if (snap.exists()) {
-        await update(sessionRef, {online:false, lastSeen:serverTimestamp(), exitAt:serverTimestamp()});
-      }
-    }
-  } catch(err){ console.warn(err); }
-}
-window.addEventListener("beforeunload", updateSessionOffline);
-window.addEventListener("unload", updateSessionOffline);
-window.addEventListener("pagehide", updateSessionOffline);
-
-/* update online when returning */
-async function updateSessionOnline(){
-  try{
-    const deviceId = deviceIdGlobal || await getDeviceFingerprint();
-    if(!deviceId) return;
-    const savedCode = localStorage.getItem("qr_code_value");
-    if (!savedCode) return;
-    const codeSnap = await get(ref(db, "codes/" + savedCode));
-    if (codeSnap.exists() && codeSnap.val().usedBy === deviceId) {
-      const sessionRef = ref(db, `sessions/${deviceId}`);
-      await update(sessionRef, {online:true, lastHeartbeat:serverTimestamp(), exitAt:null});
-      if(!heartbeatIntervalId) startHeartbeat(deviceId);
-    } else {
-      stopHeartbeat();
-    }
-  } catch(err){ console.warn("updateSessionOnline failed:", err); }
-}
-
-/* visibility change handling */
-function handleVisibilityChange() {
-  if (!localStorage.getItem("qr_code_value")) return;
-  if (document.hidden) {
-    stopHeartbeat();
-    updateSessionOffline();
-  } else {
-    updateSessionOnline();
-  }
-}
+/* session updates (unchanged) */
+async function updateSessionOffline(){ try{ const deviceId=deviceIdGlobal||localStorage.getItem("deviceId"); if(deviceId) { const sessionRef = ref(db, `sessions/${deviceId}`); const snap = await get(sessionRef); if (snap.exists()) await update(sessionRef, {online:false, lastSeen:serverTimestamp(), exitAt:serverTimestamp()}); } } catch(err){ console.warn(err); } }
+window.addEventListener("beforeunload", updateSessionOffline); window.addEventListener("unload", updateSessionOffline); window.addEventListener("pagehide", updateSessionOffline);
+async function updateSessionOnline(){ try{ const deviceId = deviceIdGlobal || await getDeviceFingerprint(); if(!deviceId) return; const savedCode = localStorage.getItem("qr_code_value"); if (!savedCode) return; const codeSnap = await get(ref(db, "codes/" + savedCode)); if (codeSnap.exists() && codeSnap.val().usedBy === deviceId) { const sessionRef = ref(db, `sessions/${deviceId}`); await update(sessionRef, {online:true, lastHeartbeat:serverTimestamp(), exitAt:null}); if(!heartbeatIntervalId) startHeartbeat(deviceId); } else { stopHeartbeat(); } } catch(err){ console.warn("updateSessionOnline failed:", err); } }
+function handleVisibilityChange() { if (!localStorage.getItem("qr_code_value")) return; if (document.hidden) { stopHeartbeat(); updateSessionOffline(); } else { updateSessionOnline(); } }
 document.addEventListener("visibilitychange", handleVisibilityChange, false);
 
-/* manual code */
+/* manual code (unchanged) */
 manualCodeBtn.onclick = async ()=>{ const code = manualCodeInput.value.trim(); if(code) await handleScannedCode(code); };
 
-/* PDF open/close (state saved) */
-window.openPDF=function(url){
-  pdfFrame.src=url;
-  pdfContainer.style.display='flex';
-  pdfContainer.setAttribute('aria-hidden','false');
-  sessionStorage.setItem('openPdfUrl', url);
+/* PDF open/close (unchanged) */
+window.openPDF=function(url){ pdfFrame.src=url; pdfContainer.style.display='flex'; pdfContainer.setAttribute('aria-hidden','false'); sessionStorage.setItem('openPdfUrl', url); }
+window.closePDF=function(){ pdfContainer.style.display='none'; pdfFrame.src=''; pdfContainer.setAttribute('aria-hidden','true'); sessionStorage.removeItem('openPdfUrl'); }
+
+/* Image Preview Functions (unchanged) */
+window.openImagePreview = function(imageUrl) { if (!imageUrl) return; imagePreviewContent.src = imageUrl; imagePreviewModal.style.display = 'flex'; }
+window.closeImagePreview = function() { imagePreviewModal.style.display = 'none'; imagePreviewContent.src = ""; }
+document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && imagePreviewModal.style.display === 'flex') { closeImagePreview(); } });
+
+// === Details Modal Functions (MODIFIED: Split Uploader/Modifier) ===
+window.showDetailsPopup = function(pdf) {
+if (!pdf) return;
+
+detailsModalTitle.textContent = pdf.name || "Détails du document";
+
+let html = '';
+
+// Description
+html += `<div class="details-row"><strong>Description</strong><span>${escapeHtml(pdf.description) || 'N/A'}</span></div>`;
+
+// Semester
+html += `<div class="details-row"><strong>Semestre</strong><span>${escapeHtml(pdf.semester) || 'N/A'}</span></div>`;
+
+// Subject
+html += `<div class="details-row"><strong>Matière</strong><span>${escapeHtml(pdf.subject) || 'N/A'}</span></div>`;
+
+// === NEW: Show Uploader (No Star) ===
+if (pdf.uploadedBy) {
+const displayUploadedBy = pdf.uploadedBy; // Display directly
+html += `<div class="details-row"><strong>Ajouté par</strong><span>${escapeHtml(displayUploadedBy)}</span></div>`;
 }
-window.closePDF=function(){
-  pdfContainer.style.display='none';
-  pdfFrame.src='';
-  pdfContainer.setAttribute('aria-hidden','true');
-  sessionStorage.removeItem('openPdfUrl');
+// === END NEW ===
+
+// === NEW: Show Last Modifier (With Star) ===
+if (pdf.lastUpdatedBy) {
+const isAdminModifier = adminNamesSet.has(pdf.lastUpdatedBy);
+const displayLastUpdatedBy = `${isAdminModifier ? '* ' : ''}${pdf.lastUpdatedBy}`; // Added star emoji
+html += `<div class="details-row"><strong>Modifié par</strong><span>${escapeHtml(displayLastUpdatedBy)}</span></div>`;
+}
+// === END NEW ===
+
+// === RE-ADDED per user request (was missing) ===
+if (isAdmin()) {
+html += `<div class="details-row"><strong>URL</strong><span style="font-size: 0.8em; word-break: break-all;">${escapeHtml(pdf.url) || 'N/A'}</span></div>`;
+}
+// === END RE-ADDED ===
+
+
+detailsModalBody.innerHTML = html;
+detailsModal.style.display = 'flex';
 }
 
-/* block context menu & dev keys */
-document.addEventListener('contextmenu', function(event) { event.preventDefault(); });
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'F12' ||
-  (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
-  (event.ctrlKey && event.key === 'U')) {
-    event.preventDefault();
-  }
+window.closeDetailsPopup = function() {
+detailsModal.style.display = 'none';
+detailsModalTitle.textContent = '';
+detailsModalBody.innerHTML = '';
+}
+
+// Add close handlers (unchanged)
+detailsModalClose.onclick = closeDetailsPopup;
+detailsModal.onclick = (e) => { if (e.target === detailsModal) closeDetailsPopup(); }; // Close on overlay click
+document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && detailsModal.style.display === 'flex') { closeDetailsPopup(); } });
+// === END Details Modal ===
+
+
+// =========================================================
+// === START: ADMIN MODAL & LOGIC (MODIFIED FOR CUSTOM ALERTS)
+// =========================================================
+
+function closeAdminModal() {
+adminModal.style.display = 'none';
+adminModalTitle.textContent = '';
+adminModalBody.innerHTML = '';
+adminModalSave.onclick = null;
+// Réactiver le bouton de sauvegarde au cas où
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+adminModalClose.onclick = closeAdminModal;
+adminModal.onclick = (e) => { if (e.target === adminModal) closeAdminModal(); };
+document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && adminModal.style.display === 'flex') { closeAdminModal(); } });
+
+// --- PDF MODALS ---
+window.showAddPdfModal = function(semesterKey, subjectKey, type) {
+if (!isAdmin()) return;
+adminModalTitle.textContent = `Ajouter PDF (${type})`;
+// === MODIFIED: REMOVED Visibility Controls ===
+adminModalBody.innerHTML = `
+<div class="admin-form-group">
+<label for="pdfName">Nom du Fichier</label>
+<input type="text" id="pdfName" placeholder="Ex: Chapitre 1 - Introduction">
+</div>
+<div class="admin-form-group">
+<label for="pdfDesc">Description (optionnel)</label>
+<textarea id="pdfDesc" placeholder="Ex: Cours du Dr. ..."></textarea>
+</div>
+<div class="admin-form-group">
+<label for="pdfUrl">URL du PDF</label>
+<input type="text" id="pdfUrl" placeholder="https://drive.google.com/...">
+</div>
+`;
+// === END MODIFICATION ===
+
+// === DELETED: event listener for select ===
+
+adminModalSave.onclick = () => saveNewPdf(semesterKey, subjectKey, type);
+adminModal.style.display = 'flex';
+}
+
+window.showEditPdfModal = function(semesterKey, subjectKey, type, pdfKey, pdfData) {
+if (!isAdmin()) return;
+adminModalTitle.textContent = `Modifier PDF (${type})`;
+// === MODIFIED: REMOVED Visibility Controls ===
+adminModalBody.innerHTML = `
+<div class="admin-form-group">
+<label for="pdfName">Nom du Fichier</label>
+<input type="text" id="pdfName" value="${escapeHtml(pdfData.name)}">
+</div>
+<div class="admin-form-group">
+<label for="pdfDesc">Description (optionnel)</label>
+<textarea id="pdfDesc">${escapeHtml(pdfData.description || '')}</textarea> </div>
+<div class="admin-form-group">
+<label for="pdfUrl">URL du PDF</label>
+<input type="text" id="pdfUrl" value="${escapeHtml(pdfData.url)}">
+</div>
+`;
+// === END MODIFICATION ===
+
+// === DELETED: Set initial visibility values ===
+
+// === DELETED: event listener for select ===
+
+adminModalSave.onclick = () => saveEditedPdf(semesterKey, subjectKey, type, pdfKey);
+adminModal.style.display = 'flex';
+}
+
+// === DELETED: Helper function getVisibilityDataFromForm ===
+
+
+// --- PDF SAVE/DELETE LOGIC ---
+window.saveNewPdf = async function(semesterKey, subjectKey, type) {
+if (!isAdmin()) return;
+const name = document.getElementById('pdfName').value.trim();
+const description = document.getElementById('pdfDesc').value.trim();
+const url = document.getElementById('pdfUrl').value.trim();
+const imageUrlInput = document.getElementById('pdfImg');
+const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
+const adminName = localStorage.getItem("adminName") || "Admin";
+
+// === DELETED: Get Visibility Data ===
+
+if (!name || !url) {
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Le nom et l'URL sont requis !");
+return;
+}
+
+adminModalSave.disabled = true;
+adminModalSave.textContent = "Enregistrement...";
+try {
+const pdfsRef = ref(db, `content/${semesterKey}/${subjectKey}/${type}`);
+const snap = await get(pdfsRef);
+const data = snap.val() || {};
+let maxKey = -1;
+for (const k in data) {
+const numK = parseInt(k);
+if (!isNaN(numK)) {
+maxKey = Math.max(maxKey, numK);
+}
+}
+const newKey = maxKey + 1;
+
+const newPdfData = {
+name,
+description: description || null,
+url,
+imageUrl: imageUrl || null,
+visibility: 'public', // === MODIFIED: Default to public ===
+uploadedAt: serverTimestamp(),
+uploadedBy: adminName,
+lastUpdatedAt: null,
+lastUpdatedBy: null
+};
+
+await set(ref(db, `content/${semesterKey}/${subjectKey}/${type}/${newKey}`), newPdfData);
+closeAdminModal();
+} catch (e) {
+console.error("Erreur sauvegarde PDF:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la sauvegarde.");
+} finally {
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+}
+
+window.saveEditedPdf = async function(semesterKey, subjectKey, type, pdfKey) {
+if (!isAdmin()) return;
+const name = document.getElementById('pdfName').value.trim();
+const description = document.getElementById('pdfDesc').value.trim();
+const url = document.getElementById('pdfUrl').value.trim();
+const imageUrlInput = document.getElementById('pdfImg');
+const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
+const adminName = localStorage.getItem("adminName") || "Admin";
+
+// === DELETED: Get Visibility Data ===
+
+if (!name || !url) {
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Le nom et l'URL sont requis !");
+return;
+}
+
+adminModalSave.disabled = true;
+adminModalSave.textContent = "Enregistrement...";
+try {
+const pdfRef = ref(db, `content/${semesterKey}/${subjectKey}/${type}/${pdfKey}`);
+const snap = await get(pdfRef);
+const existingData = snap.val() || {};
+
+const updatedData = {
+...existingData,
+name,
+description: description || null,
+url,
+imageUrl: imageUrl || null,
+// === DELETED: visibility: visibilityData, ===
+lastUpdatedAt: serverTimestamp(),
+lastUpdatedBy: adminName
+};
+await set(pdfRef, updatedData);
+closeAdminModal();
+} catch (e) {
+console.error("Erreur modification PDF:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la modification.");
+} finally {
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+}
+
+window.deletePdf = async function(semesterKey, subjectKey, type, pdfKey, pdfName) {
+if (!isAdmin()) return;
+
+// === MODIFIED: Use custom confirm ===
+const confirmed = await showCustomConfirm(
+`Voulez-vous vraiment supprimer ce PDF ?\n\n"${pdfName}"`,
+{
+title: 'Supprimer PDF',
+confirmText: 'Supprimer',
+isDanger: true
+}
+);
+
+if (!confirmed) {
+return;
+}
+// === END MODIFICATION ===
+
+try {
+const pdfRef = ref(db, `content/${semesterKey}/${subjectKey}/${type}/${pdfKey}`);
+await remove(pdfRef);
+} catch (e) {
+console.error("Erreur suppression PDF:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la suppression.");
+}
+}
+
+// --- SUBJECT MODALS & LOGIC (MODIFIED) ---
+window.showAddSubjectModal = function(semesterKey) {
+if (!isAdmin()) return;
+adminModalTitle.textContent = `Ajouter une Matière (Semestre ${semesterKey.toUpperCase()})`;
+adminModalBody.innerHTML = `
+<div class="admin-form-group">
+<label for="subjectKeyInput">ID de la Matière (unique, non modifiable)</label>
+<input type="text" id="subjectKeyInput" placeholder="Ex: 'beton_arme' (minuscules, sans espaces)">
+<p style="font-size: 0.8em; color: #888; margin-top: 5px;">
+Ceci est l'identifiant unique. Utilisez des minuscules, des chiffres et des underscores (_).
+</p>
+</div>
+<div class="admin-form-group">
+<label for="subjectNameInput">Nom d'Affichage de la Matière</label>
+<input type="text" id="subjectNameInput" placeholder="Ex: Béton Armé">
+</div>
+<div class="admin-form-group">
+<label for="subjectCommentInput">Commentaire (optionnel)</label>
+<textarea id="subjectCommentInput" placeholder="Ex: Prof. ..."></textarea>
+</div>
+`;
+adminModalSave.onclick = () => saveNewSubject(semesterKey);
+adminModal.style.display = 'flex';
+}
+
+window.showEditSubjectModal = function(semesterKey, subjectKey, currentName, currentComment) { // MODIFIED SIGNATURE
+if (!isAdmin()) return;
+adminModalTitle.textContent = `Modifier la Matière: ${subjectKey}`;
+adminModalBody.innerHTML = `
+<p style="font-size: 0.9em; color: #888; margin-bottom: 15px;">
+L'ID de la matière (${subjectKey}) ne peut pas être modifié.
+</p>
+<div class="admin-form-group">
+<label for="subjectNameInput">Nom d'Affichage de la Matière</label>
+<input type="text" id="subjectNameInput" value="${escapeHtml(currentName || '')}">
+</div>
+<div class="admin-form-group">
+<label for="subjectCommentInput">Commentaire</label>
+<textarea id="subjectCommentInput">${escapeHtml(currentComment || '')}</textarea>
+</div>
+`;
+adminModalSave.onclick = () => saveEditedSubject(semesterKey, subjectKey);
+adminModal.style.display = 'flex';
+}
+
+window.saveNewSubject = async function(semesterKey) {
+if (!isAdmin()) return;
+const keyInput = document.getElementById('subjectKeyInput');
+const nameInput = document.getElementById('subjectNameInput'); // NEW
+const commentInput = document.getElementById('subjectCommentInput');
+if (!keyInput || !nameInput) return; // NEW
+
+const subjectKey = keyInput.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+const displayName = nameInput.value.trim(); // NEW
+const comment = commentInput.value.trim();
+
+if (!subjectKey || !displayName) { // NEW Check
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("L'ID et le Nom d'Affichage de la matière sont requis.");
+return;
+}
+
+adminModalSave.disabled = true;
+adminModalSave.textContent = "Enregistrement...";
+try {
+const subjectRef = ref(db, `content/${semesterKey}/${subjectKey}`);
+const snap = await get(subjectRef);
+if (snap.exists()) {
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur: Une matière avec cet ID existe déjà.");
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+return;
+}
+
+// Get max order
+const semesterSnap = await get(ref(db, `content/${semesterKey}`));
+const semesterData = semesterSnap.val() || {};
+let maxOrder = 0;
+Object.values(semesterData).forEach(subj => {
+if (subj && typeof subj.order === 'number') {
+maxOrder = Math.max(maxOrder, subj.order);
+}
 });
+
+const newSubjectData = {
+name: displayName, // NEW FIELD
+comment: comment || null,
+order: maxOrder + 1, // Add order property for sorting
+normal: { _placeholder: true } // Add placeholder to 'normal'
+};
+
+await set(subjectRef, newSubjectData);
+closeAdminModal();
+} catch (e) {
+console.error("Erreur sauvegarde matière:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la sauvegarde.");
+} finally {
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+}
+
+window.saveEditedSubject = async function(semesterKey, subjectKey) {
+if (!isAdmin()) return;
+const nameInput = document.getElementById('subjectNameInput'); // NEW
+const commentInput = document.getElementById('subjectCommentInput');
+if (!commentInput || !nameInput) return; // NEW
+
+const newName = nameInput.value.trim(); // NEW
+const newComment = commentInput.value.trim();
+
+if (!newName) { // NEW Check
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Le Nom d'Affichage ne peut pas être vide.");
+return;
+}
+
+adminModalSave.disabled = true;
+adminModalSave.textContent = "Enregistrement...";
+try {
+// Use update to only change the comment
+await update(ref(db, `content/${semesterKey}/${subjectKey}`), {
+name: newName, // NEW
+comment: newComment || null
+});
+closeAdminModal();
+} catch (e) {
+console.error("Erreur modification matière:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la modification.");
+} finally {
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+}
+
+window.deleteSubject = async function(semesterKey, subjectKey, subjectName) {
+if (!isAdmin()) return;
+
+// === MODIFIED: Use custom confirm ===
+const confirmed = await showCustomConfirm(
+`Voulez-vous vraiment supprimer cette matière et TOUS ses documents ?\n\n"${subjectName}"`,
+{
+title: 'Supprimer Matière',
+confirmText: 'Supprimer',
+isDanger: true
+}
+);
+if (!confirmed) {
+return;
+}
+// === END MODIFICATION ===
+
+// Show status overlay for deletion
+statusOverlayText.textContent = "Suppression en cours...";
+statusOverlay.style.display = 'flex';
+
+try {
+const subjectRef = ref(db, `content/${semesterKey}/${subjectKey}`);
+await remove(subjectRef);
+} catch (e) {
+console.error("Erreur suppression matière:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la suppression.");
+} finally {
+statusOverlay.style.display = 'none';
+}
+}
+
+// === NEW: Delete Semester Function (MODIFIED) ===
+window.deleteSemester = async function(semesterKey, semesterName) {
+if (!isAdmin()) return;
+
+// === MODIFIED: Use custom prompt ===
+const confirmation = await showCustomPrompt(
+`Voulez-vous VRAIMENT supprimer l'intégralité du semestre "${semesterName}" ?\n\nCETTE ACTION EST IRRÉVERSIBLE.\n\nTapez "${semesterKey}" pour confirmer.`,
+{
+title: 'Supprimer Semestre',
+confirmText: 'Supprimer',
+}
+);
+// === END MODIFICATION ===
+
+if (confirmation !== semesterKey) {
+// === MODIFIED: Use custom alert ===
+if (confirmation !== null) { // Don't show if user just cancelled
+await showCustomAlert("Suppression annulée. La confirmation ne correspondait pas.");
+}
+return;
+}
+
+statusOverlayText.textContent = "Suppression du semestre...";
+statusOverlay.style.display = 'flex';
+
+try {
+const semesterRef = ref(db, `content/${semesterKey}`);
+await remove(semesterRef);
+
+// Success
+statusOverlay.style.display = 'none';
+// === MODIFIED: Use custom alert ===
+await showCustomAlert(`Semestre "${semesterName}" supprimé avec succès.`);
+returnToSelection(); // Go back to selection screen
+// The onValue watcher will automatically remove the button.
+} catch (e) {
+console.error("Erreur suppression semestre:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la suppression du semestre.");
+statusOverlay.style.display = 'none';
+}
+}
+// === END NEW ===
+
+// ===================================================
+// === START: ADMIN SETTINGS LOGIC (MODIFIED)
+// ===================================================
+adminSettingsBtn.onclick = () => {
+if (!isAdmin()) return;
+const currentName = localStorage.getItem("adminName") || "Admin";
+
+adminModalTitle.textContent = "Paramètres Admin";
+adminModalBody.innerHTML = `
+<div class="admin-form-group">
+<label for="adminNameInputModal">Votre Nom d'Admin</label>
+<input type="text" id="adminNameInputModal" placeholder="Votre nom" value="${escapeHtml(currentName)}">
+</div>
+<p style="font-size: 0.9em; color: #888; margin-top: 10px; font-family: 'IBM Plex Sans Arabic', sans-serif;">
+Ce nom est affiché à côté de "Ajouté par" ou "Modifié par" lorsque vous effectuez des modifications.
+</p>
+`;
+
+adminModalSave.onclick = saveAdminSettings; // Assigner la fonction de sauvegarde
+adminModal.style.display = 'flex';
+};
+
+async function saveAdminSettings() {
+const newNameInput = document.getElementById('adminNameInputModal');
+if (!newNameInput) return;
+
+const newName = newNameInput.value.trim();
+if (!newName) {
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Le nom ne peut pas être vide.");
+return;
+}
+
+const savedCode = localStorage.getItem("qr_code_value");
+if (!savedCode) {
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur: Code de session introuvable.");
+return;
+}
+
+const oldName = localStorage.getItem("adminName") || "Admin"; // <<<=== Get old name BEFORE update
+if (oldName === newName) {
+closeAdminModal(); // No change needed
+return;
+}
+
+
+adminModalSave.disabled = true;
+adminModalSave.textContent = "Enregistrement...";
+
+try {
+const adminRef = ref(db, `adminUsers/${savedCode}`);
+// Utiliser 'update' pour ne modifier que le nom
+await update(adminRef, { name: newName });
+
+// Update local storage immediately
+localStorage.setItem("adminName", newName);
+document.getElementById('welcomeMessage').textContent = `Welcome, ⭐ ${escapeHtml(newName)} 👋`;
+
+closeAdminModal(); // Fermer la modale
+
+// <<<=== Trigger the bulk update AFTER successful name change ===>>>
+await updatePdfAuthorNames(oldName, newName);
+
+} catch (e) {
+console.error("Erreur sauvegarde nom admin:", e);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur: " + e.message);
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+}
+
+async function updatePdfAuthorNames(oldName, newName) {
+console.log(`Updating PDF records from "${oldName}" to "${newName}"...`);
+statusOverlayText.textContent = "Mise à jour des enregistrements PDF...";
+statusOverlay.style.display = 'flex'; // Show loading overlay
+
+try {
+const contentRef = ref(db, 'content');
+const snapshot = await get(contentRef);
+const allContent = snapshot.val();
+
+if (!allContent) {
+console.log("No content found to update.");
+statusOverlay.style.display = 'none';
+return;
+}
+
+const updates = {};
+let updateCount = 0;
+
+// Iterate through semesters
+for (const semesterKey in allContent) {
+const semesterData = allContent[semesterKey];
+if (typeof semesterData !== 'object' || semesterData === null) continue;
+
+// Iterate through subjects
+for (const subjectKey in semesterData) {
+const subjectData = semesterData[subjectKey];
+if (typeof subjectData !== 'object' || subjectData === null) continue;
+
+// Iterate through types (normal, special, legacy - check for numeric keys)
+const typesToCheck = ['normal', 'special'];
+let legacyData = {};
+
+for (const key in subjectData) {
+if(!isNaN(parseInt(key))) { // Check for legacy numeric keys
+legacyData[key] = subjectData[key];
+}
+}
+if(Object.keys(legacyData).length > 0) typesToCheck.push('legacy');
+
+
+for (const type of typesToCheck) {
+let pdfListData = (type === 'legacy') ? legacyData : subjectData[type];
+
+if (typeof pdfListData !== 'object' || pdfListData === null) continue;
+
+// Iterate through PDF items (by index/key)
+for (const pdfKey in pdfListData) {
+const pdfData = pdfListData[pdfKey];
+if (typeof pdfData !== 'object' || pdfData === null) continue;
+
+const basePath = `content/${semesterKey}/${subjectKey}`;
+const fullPath = (type === 'legacy') ? `${basePath}/${pdfKey}` : `${basePath}/${type}/${pdfKey}`;
+
+// Check and add updates for uploadedBy
+if (pdfData.uploadedBy === oldName) {
+updates[`${fullPath}/uploadedBy`] = newName;
+updateCount++;
+}
+// Check and add updates for lastUpdatedBy
+if (pdfData.lastUpdatedBy === oldName) {
+updates[`${fullPath}/lastUpdatedBy`] = newName;
+updateCount++;
+}
+}
+}
+}
+}
+
+if (updateCount > 0) {
+console.log(`Applying ${updateCount} updates...`);
+await update(ref(db), updates);
+console.log("PDF records updated successfully.");
+} else {
+console.log("No PDF records needed updating.");
+}
+
+} catch (error) {
+console.error("Error updating PDF author names:", error);
+// === MODIFIED: Use custom alert ===
+await showCustomAlert("Erreur lors de la mise à jour des enregistrements PDF : " + error.message);
+} finally {
+statusOverlay.style.display = 'none'; // Hide loading overlay
+adminModalSave.disabled = false;
+adminModalSave.textContent = "Sauvegarder";
+}
+}
+// =================================================
+// === END: ADMIN LOGIC
+// =================================================
+
+
+// === JS: SEARCH FUNCTIONS (MODIFIED) ===
+searchButton.addEventListener('click', () => {
+const query = searchInput.value.toLowerCase().trim();
+performSearch(query);
+});
+searchInput.addEventListener('keydown', (e) => {
+if (e.key === 'Enter') {
+const query = searchInput.value.toLowerCase().trim();
+performSearch(query);
+}
+});
+
+function performSearch(query) {
+if (query.length === 0) {
+if (sessionStorage.getItem('currentPageId') === 'searchResultsContainer') {
+returnToSelection();
+}
+return;
+}
+
+// === MODIFIED: Filter by visibility AND search query ===
+const results = searchableDocs.filter(doc => {
+// 1. Check visibility first
+if (!isPdfVisible(doc.visibility, currentUserCode)) {
+return false;
+}
+// 2. If visible, check search query
+const uploaderName = doc.uploadedBy || "";
+const modifierName = doc.lastUpdatedBy || "";
+return doc.name.toLowerCase().includes(query) ||
+doc.description.toLowerCase().includes(query) ||
+doc.subject.toLowerCase().includes(query) ||
+doc.semester.toLowerCase().includes(query) ||
+uploaderName.toLowerCase().includes(query) ||
+modifierName.toLowerCase().includes(query);
+});
+// === END MODIFICATION ===
+
+renderSearchResults(results);
+}
+
+function renderSearchResults(results) {
+selectionContainer.style.display = 'none';
+Array.from(semesterPagesContainer.children).forEach(c => {
+if (c.classList.contains('content-container')) c.style.display = 'none';
+});
+searchResultsContainer.style.display = 'block';
+sessionStorage.setItem('currentPageId', 'searchResultsContainer');
+sessionStorage.removeItem('openAccordionId');
+
+searchResultsGrid.innerHTML = '';
+// === MODIFIED: No need for renderedCount, results are pre-filtered ===
+if (results.length === 0) {
+noResultsMessage.style.display = 'block';
+} else {
+noResultsMessage.style.display = 'none';
+results.forEach(pdf => {
+// === MODIFIED: Visibility is already checked in performSearch ===
+// No need to check isPdfVisible(pdf.visibility, currentUserCode) here
+// === END MODIFICATION ===
+
+const pdfBox = document.createElement('div');
+pdfBox.className = 'pdf-box';
+const embedUrl = pdf.url.includes('embedded=true') ? pdf.url : (pdf.url.includes('/preview') ? pdf.url : (pdf.url.replace('/view', '/preview') + '?embedded=true'));
+
+const thumbnailDiv = document.createElement('div');
+thumbnailDiv.className = 'pdf-thumbnail';
+const driveId = pdf.driveId;
+
+if (pdf.imageUrl) {
+const imgEl = document.createElement('img');
+imgEl.decoding = 'async'; imgEl.loading = 'lazy';
+imgEl.alt = `Preview of ${pdf.name}`; imgEl.src = pdf.imageUrl;
+imgEl.addEventListener('error', () => { thumbnailDiv.innerHTML = '<div class="icon-placeholder"><i class="fa-regular fa-file-pdf"></i></div>'; });
+thumbnailDiv.appendChild(imgEl);
+}
+else if (driveId) {
+const imgEl = document.createElement('img');
+imgEl.decoding = 'async'; imgEl.loading = 'lazy';
+imgEl.alt = `Preview of ${pdf.name}`;
+imgEl.src = buildDriveThumbnailUrl(driveId, 800);
+imgEl.srcset = `${buildDriveThumbnailUrl(driveId, 400)} 400w, ${buildDriveThumbnailUrl(driveId, 800)} 800w, ${buildDriveThumbnailUrl(driveId, 1200)} 1200w`;
+imgEl.sizes = `(max-width: 600px) 55px, 60px`;
+imgEl.addEventListener('error', () => { thumbnailDiv.innerHTML = '<div class="icon-placeholder"><i class="fa-regular fa-file-pdf"></i></div>'; });
+thumbnailDiv.appendChild(imgEl);
+}
+else { thumbnailDiv.innerHTML = '<div class="icon-placeholder"><i class="fa-regular fa-file-pdf"></i></div>'; }
+pdfBox.appendChild(thumbnailDiv);
+
+const infoDiv = document.createElement('div');
+infoDiv.className = 'pdf-info';
+
+const nameElement = document.createElement('strong');
+nameElement.textContent = pdf.name || "(No Name)";
+infoDiv.appendChild(nameElement);
+
+const contextElement = document.createElement('small');
+contextElement.className = 'pdf-context';
+contextElement.textContent = `${pdf.semester} / ${pdf.subject}`;
+infoDiv.appendChild(contextElement);
+
+if (pdf.description) {
+const descElement = document.createElement('small');
+descElement.className = 'pdf-description';
+descElement.textContent = pdf.description;
+descElement.title = pdf.description;
+infoDiv.appendChild(descElement);
+}
+
+// === NEW: Display Uploader (No Star) in Search ===
+if (pdf.uploadedBy) {
+const displayUploadedBy = pdf.uploadedBy;
+const uploaderElement = document.createElement('small');
+uploaderElement.className = 'pdf-meta';
+uploaderElement.textContent = `Ajouté par: ${displayUploadedBy}`;
+infoDiv.appendChild(uploaderElement);
+}
+// === END NEW ===
+
+// === NEW: Display Last Modifier (With Star) in Search ===
+if (pdf.lastUpdatedBy) {
+const isAdminModifier = adminNamesSet.has(pdf.lastUpdatedBy);
+const displayLastUpdatedBy = `${isAdminModifier ? '⭐ ' : ''}${pdf.lastUpdatedBy}`; // Added star emoji
+const modifierElement = document.createElement('small');
+modifierElement.className = 'pdf-meta';
+modifierElement.textContent = `Modifié par: ${displayLastUpdatedBy}`;
+infoDiv.appendChild(modifierElement);
+}
+// === END NEW ===
+
+pdfBox.appendChild(infoDiv);
+
+const buttonsDiv = document.createElement('div');
+buttonsDiv.className = 'pdf-buttons';
+
+const detailsButton = document.createElement('button');
+detailsButton.className = 'pdf-details-btn admin-btn';
+detailsButton.innerHTML = '<i class="fas fa-info-circle"></i>';
+detailsButton.setAttribute('aria-label', `Détails pour ${escapeHtml(pdf.name)}`);
+detailsButton.onclick = (e) => { e.stopPropagation(); showDetailsPopup(pdf); };
+detailsButton.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); showDetailsPopup(pdf); } });
+buttonsDiv.appendChild(detailsButton);
+
+pdfBox.appendChild(buttonsDiv);
+
+const ariaLabel = `Open PDF: ${escapeHtml(pdf.name)}. ${pdf.description ? escapeHtml(pdf.description) : ''}`;
+pdfBox.setAttribute('aria-label', ariaLabel);
+pdfBox.onclick = () => openPDF(embedUrl);
+pdfBox.setAttribute('role', 'button'); pdfBox.setAttribute('tabindex', '0');
+pdfBox.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPDF(embedUrl); } });
+
+const firstChild = thumbnailDiv.querySelector('img');
+if (firstChild) {
+let previewSrc = firstChild.src;
+if (pdf.driveId) {
+previewSrc = buildDriveThumbnailUrl(pdf.driveId, 1600);
+} else if(pdf.imageUrl) {
+previewSrc = pdf.imageUrl;
+}
+thumbnailDiv.onclick = (e) => { e.stopPropagation(); openImagePreview(previewSrc); };
+thumbnailDiv.setAttribute('role', 'button');
+thumbnailDiv.setAttribute('aria-label', `Preview image for ${escapeHtml(pdf.name)}`);
+thumbnailDiv.setAttribute('tabindex', '0');
+thumbnailDiv.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); openImagePreview(previewSrc); } });
+}
+// === MODIFIED: Append to grid ===
+searchResultsGrid.appendChild(pdfBox);
+});
+}
+// === MODIFIED: Removed renderedCount logic ===
+}
+// === END JS ===
+
+/* === DELETED REDUNDANT CODE === */
+
+
 </script>
 </body>
 </html>
